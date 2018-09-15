@@ -13,7 +13,7 @@ namespace HumanConnection.DiscordBot.Modules
     {
         private readonly ServerConfigService _serverConfigService;
         private static string _prefix;
-        private IDocumentStore _store;
+        //private IDocumentStore _store;
 
         public ServerConfigModule(ServerConfigService service, string prefix)
         {

@@ -171,7 +171,7 @@ namespace HumanConnection.DiscordBot
             // 
             // HCBot_GUI_Tray
             // 
-            this.HCBot_GUI_Tray.Text = "notifyIcon1";
+            this.HCBot_GUI_Tray.Text = "HC Bot Tray";
             this.HCBot_GUI_Tray.Visible = true;
             this.HCBot_GUI_Tray.DoubleClick += new System.EventHandler(this.HCBot_GUI_Tray_DoubleClick);
             // 
@@ -209,7 +209,6 @@ namespace HumanConnection.DiscordBot
         private System.Windows.Forms.GroupBox consoleGroup;
         private System.Windows.Forms.TextBox consoleLog;
         private System.Windows.Forms.Button statusColor;
-        private System.Windows.Forms.NotifyIcon PekeBot_GUI_Tray;
         private System.Windows.Forms.NotifyIcon HCBot_GUI_Tray;
     }
 }

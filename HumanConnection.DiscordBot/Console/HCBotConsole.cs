@@ -39,7 +39,7 @@ namespace HumanConnection.DiscordBot
         //private IServiceProvider _iservice;
         private ServerConfigService _serverconfig;
         private bool running = false;
-        private static bool DesktopNotify = true;
+        private static readonly bool DesktopNotify = true;
 
         public static bool GetDesktopNotifications() { return DesktopNotify; }
 

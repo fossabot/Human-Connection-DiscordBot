@@ -128,7 +128,7 @@ namespace HumanConnection.DiscordBot
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
-                PekeBot_GUI_Tray.Visible = true;
+                HCBot_GUI_Tray.Visible = true;
             }
         }
     }

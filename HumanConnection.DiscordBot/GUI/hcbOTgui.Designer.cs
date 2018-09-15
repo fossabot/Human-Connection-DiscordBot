@@ -122,6 +122,7 @@ namespace HumanConnection.DiscordBot
             this.consoleGroup.Controls.Add(this.consoleLog);
             this.consoleGroup.Controls.Add(this.statusBox);
             this.consoleGroup.Controls.Add(this.statusLabel);
+            this.consoleGroup.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.consoleGroup.Location = new System.Drawing.Point(13, 12);
             this.consoleGroup.Name = "consoleGroup";
             this.consoleGroup.Size = new System.Drawing.Size(394, 285);
@@ -152,11 +153,11 @@ namespace HumanConnection.DiscordBot
             // consoleLog
             // 
             this.consoleLog.AcceptsReturn = true;
-            this.consoleLog.BackColor = System.Drawing.Color.MidnightBlue;
+            this.consoleLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(47)))), ((int)(((byte)(51)))));
             this.consoleLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.consoleLog.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.consoleLog.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.consoleLog.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.consoleLog.Font = new System.Drawing.Font("Consolas", 12.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.consoleLog.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(137)))), ((int)(((byte)(218)))));
             this.consoleLog.Location = new System.Drawing.Point(5, 51);
             this.consoleLog.Multiline = true;
             this.consoleLog.Name = "consoleLog";
@@ -166,6 +167,7 @@ namespace HumanConnection.DiscordBot
             this.consoleLog.Size = new System.Drawing.Size(383, 228);
             this.consoleLog.TabIndex = 8;
             this.consoleLog.TabStop = false;
+            this.consoleLog.Text = "Test";
             // 
             // HCBot_GUI_Tray
             // 
@@ -188,7 +190,7 @@ namespace HumanConnection.DiscordBot
             this.MaximizeBox = false;
             this.Name = "HCBotGUI";
             this.ShowIcon = false;
-            this.Text = "Peke Bot - User Interface";
+            this.Text = "Human Connection - Bot";
             this.SizeChanged += new System.EventHandler(this.HCBot_GUI_SizeChanged);
             this.consoleGroup.ResumeLayout(false);
             this.consoleGroup.PerformLayout();

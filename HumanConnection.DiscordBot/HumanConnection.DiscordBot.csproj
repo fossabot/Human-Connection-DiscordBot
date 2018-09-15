@@ -34,7 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Lulalaby.Discord.Program</StartupObject>
+    <StartupObject>HumanConnection.DiscordBot.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>70A293308E221C102C7A5A55A0D6CD1927605CCC</ManifestCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Discord.Addons.CommandCache, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">

@@ -1,4 +1,5 @@
 # Human-Connection-DiscordBot
+![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
 ## Infos
 Sprache: C#

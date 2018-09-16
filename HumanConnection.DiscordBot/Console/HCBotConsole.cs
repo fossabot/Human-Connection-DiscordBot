@@ -26,12 +26,24 @@ using HumanConnection.DiscordBot.Services;
 using HumanConnection.DiscordBot.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using System.Linq;
 
 namespace HumanConnection.DiscordBot
 {
     public class HCBotConsole
     {
         public static string ConnectionStatus = "Disconnected";
+
+        public ulong hcGuildId = 443107904757694465;
+        public string hcEmote = "<:hc:490607923718782997>";
+        public string hcDeChannelMention = "<#443107905307410473>";
+        public string hcEnChannelMention = "<#469161003511447572>";
+        public string hcBotLogChannelMention = "<#490977974787768353>";
+        public string hcBotRegelChannelMention = "<#490991963676344340>";
+        public ulong hcMemberGroupId = 490613814916808718;
+        public ulong hcDeChannelId = 443107905307410473;
+        public ulong hcEnChannelId = 469161003511447572;
+        public ulong hcBotLogChannelId = 490977974787768353;
 
         private DiscordSocketClient _client;
         //private IAudioChannel _voice;
@@ -103,14 +115,16 @@ namespace HumanConnection.DiscordBot
                 _client.Log += Log;
                 _client.Ready += ReadyAsync;
                 _client.MessageReceived += MessageReceivedAsync;
-
+                //_client.ReactionAdded += ReactionAddedAsync;
+                //_client.ReactionRemoved += ReactionRemovedAsync;
+                _client.UserJoined += UserJoinedAsync;
+                _client.UserLeft += logUserLeaveAsync;
 
                 await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Starting"));
                 await _client.LoginAsync(TokenType.Bot, token);
 
                 await _client.StartAsync();
-                await _client.SetStatusAsync(UserStatus.Idle);
-                await _client.SetGameAsync("^help", "https://bb-official.com", StreamType.NotStreaming);
+                //await _client.SetGameAsync("^help");
                 
                 running = true;
 
@@ -158,17 +172,65 @@ namespace HumanConnection.DiscordBot
         #endregion
 
         #region Ready Async
-        private Task ReadyAsync()
+        private async Task ReadyAsync()
         {
             Console.WriteLine($"{_client.CurrentUser} is connected!");
+            await LogReady();
+        }
+        #endregion
 
-            return Task.CompletedTask;
+        #region User Join / Leave Asnyc
+        private async Task UserJoinedAsync(SocketGuildUser guildUser)
+        {
+            var guild = _client.GetGuild(hcGuildId);
+            await sendGermanWelcomeMessage(guild.GetTextChannel(hcDeChannelId), guildUser, guild, hcEmote);
+            //await sendEnglishWelcomeMessage(guild.GetTextChannel(hcEnChannelId), guildUser, guild, hcEmote);
+            await logUserJoin(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild);
+            //await testMsg(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild, hcEmote);
+            Console.WriteLine($"User {guildUser.Nickname} joined");
+        }
+
+        // Test Message
+        private async Task testMsg(SocketTextChannel channel, SocketGuildUser user, SocketGuild guild, String emote)
+        {
+            //
+        }
+
+        private async Task sendGermanWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
+        {
+            await channel.SendMessageAsync($"Herzlich willkommen {user.Mention}\nDu bist auf dem Entwickler Discord von {guild.Name} gelandet :smile: \n\nSchau bitte in {hcBotLogChannelMention} für weiter Informationen, wie du mithelfen kannst.\nUm die Regeln ({hcBotRegelChannelMention}) zu akzeptieren, schreibe bitte `^accept-rules` in einen Channel deiner Wahl um die Rolle _{guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
+        }
+
+        private async Task sendEnglishWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
+        {
+            await channel.SendMessageAsync($"Welcome {user.Mention} on the developer discord by {guild.Name} {emote}");
+        }
+        #endregion
+
+        #region Discord Logging
+        private async Task logUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
+        {
+            await channel.SendMessageAsync($"**Join**\n{user.Mention} ist dem Server beigetreten. Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
+            await user.AddRoleAsync(guild.GetRole(484463156219871232));
+        }
+
+        private async Task logUserLeaveAsync(SocketGuildUser user)
+        {
+            SocketGuild guild = user.Guild;
+            SocketTextChannel logChannel = guild.GetTextChannel(hcBotLogChannelId);
+            await logChannel.SendMessageAsync($"**Leave**\n{user.Mention} ist vom Server gegangen.");
+        }
+
+        private async Task LogReady()
+        {
+            await _client.GetGuild(hcGuildId).GetTextChannel(hcBotLogChannelId).SendMessageAsync($"**Info**\nHC Control auf Posten.");
         }
         #endregion
 
         #region Message received Async - Commands
         private async Task MessageReceivedAsync(SocketMessage message)
         {
+
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
 
@@ -198,6 +260,27 @@ namespace HumanConnection.DiscordBot
 
                 await message.Channel.SendMessageAsync(mention + ", Pong! :3");
             }
+            else if(message.Content.StartsWith("^accept-rules"))
+            {
+                SocketGuildUser guildUser = message.Author as SocketGuildUser;
+                SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
+
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
+                IEmote emote = guild.Emotes.First(e => e.Name == "hc");
+                
+                await msg.AddReactionAsync(emote);
+                await guildUser.RemoveRoleAsync(guild.GetRole(484463156219871232));
+                await guildUser.AddRoleAsync(guild.GetRole(hcMemberGroupId));
+                await msg.DeleteAsync();
+            }
+            else if(message.Content.Contains("Human-Connection") || message.Content.Contains("HC") || message.Content.Contains("Human Connection") || message.Content.Contains("hc"))
+            {
+                SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
+                IEmote emote = guild.Emotes.First(e => e.Name == "hc");
+
+                await msg.AddReactionAsync(emote);
+            }
             #region test failed
             /*
             else if(message.Content.StartsWith("^server update name"))
@@ -226,29 +309,33 @@ namespace HumanConnection.DiscordBot
 
                 var builder = new EmbedBuilder();
 
-                builder.WithTitle("Commands of " + nickname);
+                builder.WithTitle("Commands of HC Control");
                 //builder.WithThumbnailUrl("https://img.bb-official.com/PekeBotApp.png");
-                builder.WithDescription("This are the commands for the *" + nickname + "*. The Prefix is ^");
+                builder.WithDescription($"This are the commands for the *HC Control*. The prefix is ^");
                 builder.AddField("^ping", "Returns a friendly \"Pong\"");
+                builder.AddField("^accept-rules", "Accept the rules of this server");
+                builder.AddField("^gpdr", "GPDR of this Server - Not implemented");
+                builder.AddField("^info", "Info about the Server - Not implemented");
                 builder.AddField("^help", "This help");
                 builder.AddField("^author", "Information about the author");
                 builder.WithCurrentTimestamp();
                 builder.WithFooter("©2018 Lala Sabathil | " + Application.ProductName);
-                builder.WithColor(Color.Gold);
+                builder.WithColor(Color.Blue);
 
                 await message.Channel.SendMessageAsync("", false, builder);
             }
             else if(message.Content.StartsWith("^author"))
             {
+                SocketGuildUser authorUser = _client.GetGuild(hcGuildId).Users.First(a => a.Nickname == "Lala");
 
                 var builder = new EmbedBuilder();
 
-                builder.WithTitle("Author contactdata of " + nickname);
+                builder.WithTitle("Author contact data of HC Control");
                 //builder.WithImageUrl("https://img.bb-official.com/PekeBotApp.png");
                 //builder.WithThumbnailUrl("https://img.bb-official.com/PekeBotApp.png");
-                builder.WithDescription("The Author of the Peke Bot is Lala Sabathil");
-                builder.AddField("Discord Server", "https://discord.gg/heqF6P4");
-                builder.AddField("Discord User", "Lulalaby#7777");
+                builder.WithDescription("The author of the HC Control is Lala Sabathil");
+                builder.AddField("Discord server", _client.GetInviteAsync("heqF6P4"));
+                builder.AddField("Discord user", authorUser.Mention);
                 builder.AddField("Facebook", "https://www.facebook.com/LalaDeviChan");
                 builder.AddField("Twitter", "https://twitter.com/Lala_devi_chan");
                 builder.AddField("Mail", "admin@latias.eu");

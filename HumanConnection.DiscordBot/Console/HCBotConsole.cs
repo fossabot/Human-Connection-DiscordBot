@@ -7,6 +7,7 @@ using Discord.Audio.Streams;
 using Discord.Commands;
 using Discord.Commands.Builders;
 using Discord.Webhook;
+using Discord.Rest;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -51,7 +52,6 @@ namespace HumanConnection.DiscordBot
         public ulong hcBotLogChannelId = 490977974787768353;
 
         private DiscordSocketClient _client;
-        //private IAudioChannel _voice;
         //private CommandService _service;
         //private IServiceProvider _iservice;
         private ServerConfigService _serverconfig;
@@ -109,7 +109,6 @@ namespace HumanConnection.DiscordBot
             _serverconfig = new ServerConfigService();
             //_service = new CommandService();
             //_iservice = InstallServices();
-            //_aservice = new AudioService();
             running = false;
             
             SetConnectionStatus("Connecting", System.Drawing.Color.GreenYellow, 0);
@@ -129,7 +128,7 @@ namespace HumanConnection.DiscordBot
                 await _client.LoginAsync(TokenType.Bot, token);
 
                 await _client.StartAsync();
-                //await _client.SetGameAsync("^help");
+                await _client.SetGameAsync("$help");
                 
                 running = true;
 
@@ -203,7 +202,7 @@ namespace HumanConnection.DiscordBot
 
         private async Task SendGermanWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
         {
-            await channel.SendMessageAsync($"Herzlich willkommen {user.Mention}\nDu bist auf dem Entwickler Discord von {guild.Name} gelandet :smile: \n\nSchau bitte in {hcBotLogChannelMention} für weiter Informationen, wie du mithelfen kannst.\nUm die Regeln ({hcBotRegelChannelMention}) zu akzeptieren, schreibe bitte `^accept-rules` in einen Channel deiner Wahl um die Rolle _{guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
+            await channel.SendMessageAsync($"Herzlich willkommen {user.Mention}\nDu bist auf dem Entwickler Discord von {guild.Name} gelandet :smile: \n\nSchau bitte in {hcBotLogChannelMention} für weiter Informationen, wie du mithelfen kannst.\nUm die Regeln ({hcBotRegelChannelMention}) zu akzeptieren, schreibe bitte `$accept-rules` in einen Channel deiner Wahl um die Rolle _{guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
         }
 
         private async Task SendEnglishWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
@@ -259,13 +258,13 @@ namespace HumanConnection.DiscordBot
 
             Console.WriteLine("Received message from " + username + " in " + channel + ": " + message.Content);
 
-            if (message.Content.StartsWith("^ping"))
+            if (message.Content.StartsWith("$ping"))
             {
                 await message.Channel.TriggerTypingAsync();
 
                 await message.Channel.SendMessageAsync(mention + ", Pong! :3");
             }
-            else if(message.Content.StartsWith("^accept-rules"))
+            else if(message.Content.StartsWith("$accept-rules"))
             {
                 SocketGuildUser guildUser = message.Author as SocketGuildUser;
                 SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
@@ -288,7 +287,7 @@ namespace HumanConnection.DiscordBot
             }
             #region test failed
             /*
-            else if(message.Content.StartsWith("^server update name"))
+            else if(message.Content.StartsWith("$server update name"))
             {
                 var newname = message.Content.Replace("^server update name ", "");
                 var chan = message.Channel as SocketGuildChannel;
@@ -304,62 +303,112 @@ namespace HumanConnection.DiscordBot
                 }
             }*/
             #endregion
-            else if(message.Content.StartsWith("^help"))
+            else if (message.Content.StartsWith("$help"))
             {
                 await message.Channel.TriggerTypingAsync();
 
-                await message.Channel.SendMessageAsync(mention + " here is my help page " + botEmote);
+                ulong authorId = message.Author.Id;
+
+                SocketGuild guild = _client.GetGuild(hcGuildId);
+                SocketGuildUser user = guild.GetUser(authorId);
 
                 await message.Channel.TriggerTypingAsync();
 
-                var builder = new EmbedBuilder();
+                RestUserMessage rMsg = await message.Channel.SendMessageAsync(mention + " here is my help page " + botEmote);
 
+                await message.Channel.TriggerTypingAsync();
+
+                var embedFooter = new EmbedFooterBuilder();
+                embedFooter.WithText($"©2018 Lala Sabathil | {Application.ProductName}");
+
+                var builder = new EmbedBuilder();
                 builder.WithTitle("Commands of HC Control");
-                //builder.WithThumbnailUrl("https://img.bb-official.com/PekeBotApp.png");
-                builder.WithDescription($"This are the commands for the *HC Control*. The prefix is ^");
-                builder.AddField("^accept-rules", "Accept the rules of this server");
-                builder.AddField("^author", "Information about the author");
-                builder.AddField("^gpdr", "GPDR of this Server - Not implemented");
-                builder.AddField("^help", "This help");
-                builder.AddField("^info", "Info about the Server - Not implemented");
-                builder.AddField("^ping", "Returns a friendly \"Pong\"");
-                builder.WithFooter("©2018 Lala Sabathil | " + Application.ProductName);
+                builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
+                builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
+                builder.WithDescription($"This are the commands for the **HC Control**. The prefix is **$**");
+                builder.AddField("$accept-rules", "Accept the rules of this server");
+                builder.AddField("$author", "Information about the author");
+                builder.AddField("$gpdr", "GPDR of this Server - Not implemented");
+                builder.AddField("$help", "This help");
+                builder.AddField("$info", "Info about the server - Not implemented");
+                builder.AddField("$ping", "Returns a friendly \"Pong\"");
+                builder.WithFooter(embedFooter);
                 builder.WithColor(Color.Blue);
 
                 await message.Channel.SendMessageAsync("", false, builder);
-            }
-            else if(message.Content.StartsWith("^author"))
-            {
-
-                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
                 
+                if (user.GuildPermissions.Administrator)
+                {
+                    RestUserMessage rAMsg = await message.Channel.SendMessageAsync(mention + " please look my pm for admin commands " + botEmote);
+
+                    var embedAuthor = new EmbedAuthorBuilder();
+                    embedAuthor.WithName("HC Bot");
+                    embedAuthor.WithUrl("https://github.com/Lulalaby/Human-Connection-DiscordBot/");
+
+                    var embedAdminFooter = new EmbedFooterBuilder();
+                    embedAdminFooter.WithText($"©2018 Lala Sabathil | {Application.ProductName}");
+
+                    var adminBuilder = new EmbedBuilder();
+                    adminBuilder.WithAuthor(embedAuthor);
+                    adminBuilder.WithTitle("Admin commands of HC Control - Not implemented right now");
+                    adminBuilder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
+                    adminBuilder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
+                    adminBuilder.WithDescription($"This are the admin commands for the **HC Control**.\nSince you have Administrator Privilege, you get this message.\nAdmin prefix is **!**");
+                    adminBuilder.AddField("!ban <usermention> <reason>", "Ban the mentioned *user* with *reason*");
+                    adminBuilder.AddField("!info", "Info about the server for admins");
+                    adminBuilder.AddField("!kick <usermention> <reason>", "Kick the mentioned *user* with *reason*");
+                    adminBuilder.AddField("!role-add <usermention> <rolename>", "Add *user* to *role*");
+                    adminBuilder.AddField("!role-remove <usermention> <rolename>", "Remove *user* from *role*");
+                    adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
+                    adminBuilder.WithFooter(embedAdminFooter);
+                    adminBuilder.WithColor(Color.DarkRed);
+                    
+                    await message.Author.SendMessageAsync("", false, adminBuilder);
+
+                    await Task.Delay(2000);
+                    await rAMsg.DeleteAsync();
+                }
+            }
+            else if(message.Content.StartsWith("$author"))
+            {
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
+
                 SocketGuildUser authorUser = _client.GetGuild(hcGuildId).Users.First(a => a.Nickname == "Lala");
 
-                var builder = new EmbedBuilder();
+                var embedFooter = new EmbedFooterBuilder();
+                embedFooter.WithText($"©2018 Lala Sabathil | {Application.ProductName}");
 
+                RestInvite invite = await _client.GetInviteAsync("NgVpvx9");
+                String inviteUrl = invite.Url;
+
+                var builder = new EmbedBuilder();
                 builder.WithTitle("Author contact data of HC Control");
-                //builder.WithImageUrl("https://img.bb-official.com/PekeBotApp.png");
-                //builder.WithThumbnailUrl("https://img.bb-official.com/PekeBotApp.png");
+                builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
+                builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
                 builder.WithDescription("The author of the HC Control is Lala Sabathil");
-                builder.AddField("Discord server", _client.GetInviteAsync("heqF6P4"));
+                builder.AddField("Discord server", inviteUrl);
                 builder.AddField("Discord user", authorUser.Mention);
                 builder.AddField("Facebook", "https://www.facebook.com/LalaDeviChan");
                 builder.AddField("Twitter", "https://twitter.com/Lala_devi_chan");
                 builder.AddField("Mail", "admin@latias.eu");
                 builder.AddField("Telegram", "https://telegram.me/Lulalaby");
                 builder.WithUrl("https://www.latias.eu");
-                //builder.WithImageUrl("https://img.bb-official.com/LalaDiscord.jpg");
-                builder.WithFooter("©2018 Lala Sabathil | " + Application.ProductName);
+                builder.WithFooter(embedFooter);
                 builder.WithColor(Color.DarkBlue);
 
                 await message.Author.SendMessageAsync("", false, builder);
                 await msg.DeleteAsync();
             }
-            else if (message.Content.StartsWith("^"))
+            else if (message.Content.StartsWith("$") || message.Content.StartsWith("!"))
             {
-                await message.Channel.TriggerTypingAsync();
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
 
-                await message.Channel.SendMessageAsync($"{mention} \"{message.Content}\" command is not implemented :(");
+                await message.Channel.TriggerTypingAsync();
+                RestUserMessage rMsg = await message.Channel.SendMessageAsync($"{mention} \"{message.Content}\" command is not implemented :(");
+
+                await Task.Delay(5000);
+                await msg.DeleteAsync();
+                await rMsg.DeleteAsync();
             }
         }
         #endregion

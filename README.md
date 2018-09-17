@@ -19,11 +19,11 @@ Develop Software: Visual Studio
 
 - [x]  Preparing for developing
 
-- [ ] Adding basic features
+- [x] Adding basic features
 
 - [ ] Adding extended features
 
-- [ ] Remove or hide testing console
+- [x] Remove or hide testing console
 
 - [ ] Compiling working version for HC
 

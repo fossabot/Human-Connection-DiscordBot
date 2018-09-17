@@ -118,7 +118,7 @@ namespace HumanConnection.DiscordBot
                 //_client.ReactionAdded += ReactionAddedAsync;
                 //_client.ReactionRemoved += ReactionRemovedAsync;
                 _client.UserJoined += UserJoinedAsync;
-                _client.UserLeft += logUserLeaveAsync;
+                _client.UserLeft += LogUserLeaveAsync;
 
                 await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Starting"));
                 await _client.LoginAsync(TokenType.Bot, token);
@@ -183,38 +183,38 @@ namespace HumanConnection.DiscordBot
         private async Task UserJoinedAsync(SocketGuildUser guildUser)
         {
             var guild = _client.GetGuild(hcGuildId);
-            await sendGermanWelcomeMessage(guild.GetTextChannel(hcDeChannelId), guildUser, guild, hcEmote);
+            await SendGermanWelcomeMessage(guild.GetTextChannel(hcDeChannelId), guildUser, guild, hcEmote);
             //await sendEnglishWelcomeMessage(guild.GetTextChannel(hcEnChannelId), guildUser, guild, hcEmote);
-            await logUserJoin(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild);
+            await LogUserJoin(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild);
             //await testMsg(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild, hcEmote);
             Console.WriteLine($"User {guildUser.Nickname} joined");
         }
 
-        // Test Message
-        private async Task testMsg(SocketTextChannel channel, SocketGuildUser user, SocketGuild guild, String emote)
+        // Test Msg
+        /*private async Task testMsg(SocketTextChannel channel, SocketGuildUser user, SocketGuild guild, String emote)
         {
             //
-        }
+        }*/
 
-        private async Task sendGermanWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
+        private async Task SendGermanWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
         {
             await channel.SendMessageAsync($"Herzlich willkommen {user.Mention}\nDu bist auf dem Entwickler Discord von {guild.Name} gelandet :smile: \n\nSchau bitte in {hcBotLogChannelMention} für weiter Informationen, wie du mithelfen kannst.\nUm die Regeln ({hcBotRegelChannelMention}) zu akzeptieren, schreibe bitte `^accept-rules` in einen Channel deiner Wahl um die Rolle _{guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
         }
 
-        private async Task sendEnglishWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
+        private async Task SendEnglishWelcomeMessage(SocketTextChannel channel, SocketGuildUser user, IGuild guild, String emote)
         {
             await channel.SendMessageAsync($"Welcome {user.Mention} on the developer discord by {guild.Name} {emote}");
         }
         #endregion
 
         #region Discord Logging
-        private async Task logUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
+        private async Task LogUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
         {
             await channel.SendMessageAsync($"**Join**\n{user.Mention} ist dem Server beigetreten. Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
             await user.AddRoleAsync(guild.GetRole(484463156219871232));
         }
 
-        private async Task logUserLeaveAsync(SocketGuildUser user)
+        private async Task LogUserLeaveAsync(SocketGuildUser user)
         {
             SocketGuild guild = user.Guild;
             SocketTextChannel logChannel = guild.GetTextChannel(hcBotLogChannelId);

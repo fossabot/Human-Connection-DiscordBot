@@ -15,7 +15,7 @@ Develop Software: Visual Studio
 
 - [x] Creating discord bot on https://discordapp.com/developers/applications/
 
-- [ ]  First test run
+- [x]  First test run
 
 - [x]  Preparing for developing
 

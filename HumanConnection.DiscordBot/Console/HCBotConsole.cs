@@ -196,7 +196,7 @@ namespace HumanConnection.DiscordBot
         private async Task UserJoinedAsync(SocketGuildUser guildUser)
         {
             var guild = _client.GetGuild(hcGuildId);
-            await SendGermanWelcomeMessage(guild.GetTextChannel(hcDeChannelId), guildUser, guild, hcEmote);
+            //await SendGermanWelcomeMessage(guild.GetTextChannel(hcDeChannelId), guildUser, guild, hcEmote);
             //await sendEnglishWelcomeMessage(guild.GetTextChannel(hcEnChannelId), guildUser, guild, hcEmote);
             await LogUserJoin(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild);
             //await testMsg(guild.GetTextChannel(hcBotLogChannelId), guildUser, guild, hcEmote);
@@ -223,7 +223,7 @@ namespace HumanConnection.DiscordBot
         #region Discord Logging
         private async Task LogUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
         {
-            await channel.SendMessageAsync($"**Join**\n{user.Mention} ist dem Server beigetreten. Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
+            await channel.SendMessageAsync($"**Join**\n{user.Mention} ist dem Server beigetreten. ");// Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
             await user.AddRoleAsync(guild.GetRole(484463156219871232));
         }
 

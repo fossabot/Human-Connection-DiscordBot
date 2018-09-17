@@ -10,6 +10,7 @@ Develop Software: Visual Studio
 
 ## Status
 <span style="color: white; background-color: black;">
+
 - [x]  Forked discord bot from lulalaby repository
 
 - [x] Rewrite of bot
@@ -27,6 +28,7 @@ Develop Software: Visual Studio
 - [x] Remove or hide testing console
 
 - [ ] Compiling working version for HC
+
 </span>
 
 

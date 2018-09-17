@@ -1,2 +1,3 @@
 .vs/
-/HumanConnection.DiscordBot/bin/Debug
+HumanConnection.DiscordBot/bin
+HumanConnection.DiscordBot/obj

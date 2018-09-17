@@ -35,7 +35,7 @@ namespace HumanConnection.DiscordBot
         public static string ConnectionStatus = "Disconnected";
 
         public ulong hcGuildId = 443107904757694465;
-        public string hcEmote = "<:hc:490607923718782997>";
+        public string hcEmote = "<:hcwhite:491192363738333184>";
         public string hcDeChannelMention = "<#443107905307410473>";
         public string hcEnChannelMention = "<#469161003511447572>";
         public string hcBotLogChannelMention = "<#490977974787768353>";
@@ -326,6 +326,9 @@ namespace HumanConnection.DiscordBot
             }
             else if(message.Content.StartsWith("^author"))
             {
+
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
+                
                 SocketGuildUser authorUser = _client.GetGuild(hcGuildId).Users.First(a => a.Nickname == "Lala");
 
                 var builder = new EmbedBuilder();
@@ -346,6 +349,7 @@ namespace HumanConnection.DiscordBot
                 builder.WithColor(Color.DarkBlue);
 
                 await message.Author.SendMessageAsync("", false, builder);
+                await msg.DeleteAsync();
             }
             else if (message.Content.StartsWith("^"))
             {

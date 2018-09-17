@@ -133,5 +133,19 @@ namespace HumanConnection.DiscordBot
                 HCBot_GUI_Tray.Visible = true;
             }
         }
+
+        private void consoleSwitch_Click(object sender, EventArgs e)
+        {
+            if(HCBotConsole.ConsoleVisible())
+            {
+                HCBotConsole.HideConsoleWindow();
+                consoleSwitch.Text = "Show Console";
+            }
+            else
+            {
+                HCBotConsole.ShowConsoleWindow();
+                consoleSwitch.Text = "Hide Console";
+            }
+        }
     }
 }

@@ -33,6 +33,8 @@ namespace HumanConnection.DiscordBot
 {
     public class HCBotConsole
     {
+        private static bool visible = true;
+
         public static string ConnectionStatus = "Disconnected";
 
         public ulong hcGuildId = 443107904757694465;
@@ -73,6 +75,11 @@ namespace HumanConnection.DiscordBot
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
 
+        public static bool ConsoleVisible()
+        {
+            return visible;
+        }
+
         public static void ShowConsoleWindow()
         {
             var handle = GetConsoleWindow();
@@ -85,6 +92,7 @@ namespace HumanConnection.DiscordBot
             {
                 ShowWindow(handle, SW_SHOW);
             }
+            visible = true;
         }
 
         public static void HideConsoleWindow()
@@ -92,6 +100,7 @@ namespace HumanConnection.DiscordBot
             var handle = GetConsoleWindow();
 
             ShowWindow(handle, SW_HIDE);
+            visible = false;
         }
         #endregion
 
@@ -378,7 +387,7 @@ namespace HumanConnection.DiscordBot
                 var embedFooter = new EmbedFooterBuilder();
                 embedFooter.WithText($"©2018 Lala Sabathil | {Application.ProductName}");
 
-                RestInvite invite = await _client.GetInviteAsync("NgVpvx9");
+                RestInvite invite = await _client.GetInviteAsync("THZue3w");
                 String inviteUrl = invite.Url;
 
                 var builder = new EmbedBuilder();

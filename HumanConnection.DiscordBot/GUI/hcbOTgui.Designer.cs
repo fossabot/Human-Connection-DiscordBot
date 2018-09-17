@@ -37,10 +37,12 @@ namespace HumanConnection.DiscordBot
             this.statusLabel = new System.Windows.Forms.Label();
             this.statusBox = new System.Windows.Forms.TextBox();
             this.consoleGroup = new System.Windows.Forms.GroupBox();
+            this.hcLogo = new System.Windows.Forms.PictureBox();
             this.statusColor = new System.Windows.Forms.Button();
             this.consoleLog = new System.Windows.Forms.TextBox();
             this.HCBot_GUI_Tray = new System.Windows.Forms.NotifyIcon(this.components);
             this.consoleGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hcLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // launch
@@ -118,6 +120,7 @@ namespace HumanConnection.DiscordBot
             // 
             // consoleGroup
             // 
+            this.consoleGroup.Controls.Add(this.hcLogo);
             this.consoleGroup.Controls.Add(this.statusColor);
             this.consoleGroup.Controls.Add(this.consoleLog);
             this.consoleGroup.Controls.Add(this.statusBox);
@@ -129,6 +132,17 @@ namespace HumanConnection.DiscordBot
             this.consoleGroup.TabIndex = 8;
             this.consoleGroup.TabStop = false;
             this.consoleGroup.Text = "Console";
+            // 
+            // hcLogo
+            // 
+            this.hcLogo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hcLogo.Image = global::HumanConnection.DiscordBot.Properties.Resources.HC_Control_Logo_white;
+            this.hcLogo.Location = new System.Drawing.Point(3, 22);
+            this.hcLogo.Name = "hcLogo";
+            this.hcLogo.Size = new System.Drawing.Size(388, 260);
+            this.hcLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.hcLogo.TabIndex = 10;
+            this.hcLogo.TabStop = false;
             // 
             // statusColor
             // 
@@ -171,8 +185,8 @@ namespace HumanConnection.DiscordBot
             // 
             // HCBot_GUI_Tray
             // 
-            this.HCBot_GUI_Tray.Text = "HC Bot Tray";
-            this.HCBot_GUI_Tray.Visible = true;
+            this.HCBot_GUI_Tray.Icon = global::HumanConnection.DiscordBot.Properties.Resources.hclogo;
+            this.HCBot_GUI_Tray.Text = "Human Connection\nHC Control";
             this.HCBot_GUI_Tray.DoubleClick += new System.EventHandler(this.HCBot_GUI_Tray_DoubleClick);
             // 
             // HCBotGUI
@@ -187,13 +201,14 @@ namespace HumanConnection.DiscordBot
             this.Controls.Add(this.launch);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = global::HumanConnection.DiscordBot.Properties.Resources.hclogo;
             this.MaximizeBox = false;
             this.Name = "HCBotGUI";
-            this.ShowIcon = false;
-            this.Text = "Human Connection - Bot";
+            this.Text = "Human Connection - HC Control";
             this.SizeChanged += new System.EventHandler(this.HCBot_GUI_SizeChanged);
             this.consoleGroup.ResumeLayout(false);
             this.consoleGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hcLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -210,5 +225,6 @@ namespace HumanConnection.DiscordBot
         private System.Windows.Forms.TextBox consoleLog;
         private System.Windows.Forms.Button statusColor;
         private System.Windows.Forms.NotifyIcon HCBot_GUI_Tray;
+        private System.Windows.Forms.PictureBox hcLogo;
     }
 }

@@ -35,12 +35,17 @@ namespace HumanConnection.DiscordBot
         public static string ConnectionStatus = "Disconnected";
 
         public ulong hcGuildId = 443107904757694465;
+
         public string hcEmote = "<:hcwhite:491192363738333184>";
+        public string botEmote = "<:bot:491234510659125271>";
+
         public string hcDeChannelMention = "<#443107905307410473>";
         public string hcEnChannelMention = "<#469161003511447572>";
         public string hcBotLogChannelMention = "<#490977974787768353>";
         public string hcBotRegelChannelMention = "<#490991963676344340>";
+
         public ulong hcMemberGroupId = 490613814916808718;
+
         public ulong hcDeChannelId = 443107905307410473;
         public ulong hcEnChannelId = 469161003511447572;
         public ulong hcBotLogChannelId = 490977974787768353;
@@ -266,7 +271,7 @@ namespace HumanConnection.DiscordBot
                 SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
 
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
-                IEmote emote = guild.Emotes.First(e => e.Name == "hc");
+                IEmote emote = guild.Emotes.First(e => e.Name == "hcwhite");
                 
                 await msg.AddReactionAsync(emote);
                 await guildUser.RemoveRoleAsync(guild.GetRole(484463156219871232));
@@ -277,7 +282,7 @@ namespace HumanConnection.DiscordBot
             {
                 SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
-                IEmote emote = guild.Emotes.First(e => e.Name == "hc");
+                IEmote emote = guild.Emotes.First(e => e.Name == "hcwhite");
 
                 await msg.AddReactionAsync(emote);
             }
@@ -303,7 +308,7 @@ namespace HumanConnection.DiscordBot
             {
                 await message.Channel.TriggerTypingAsync();
 
-                await message.Channel.SendMessageAsync(mention + ", you requested my help? You'll get it!");
+                await message.Channel.SendMessageAsync(mention + " here is my help page " + botEmote);
 
                 await message.Channel.TriggerTypingAsync();
 
@@ -312,13 +317,12 @@ namespace HumanConnection.DiscordBot
                 builder.WithTitle("Commands of HC Control");
                 //builder.WithThumbnailUrl("https://img.bb-official.com/PekeBotApp.png");
                 builder.WithDescription($"This are the commands for the *HC Control*. The prefix is ^");
-                builder.AddField("^ping", "Returns a friendly \"Pong\"");
                 builder.AddField("^accept-rules", "Accept the rules of this server");
-                builder.AddField("^gpdr", "GPDR of this Server - Not implemented");
-                builder.AddField("^info", "Info about the Server - Not implemented");
-                builder.AddField("^help", "This help");
                 builder.AddField("^author", "Information about the author");
-                builder.WithCurrentTimestamp();
+                builder.AddField("^gpdr", "GPDR of this Server - Not implemented");
+                builder.AddField("^help", "This help");
+                builder.AddField("^info", "Info about the Server - Not implemented");
+                builder.AddField("^ping", "Returns a friendly \"Pong\"");
                 builder.WithFooter("©2018 Lala Sabathil | " + Application.ProductName);
                 builder.WithColor(Color.Blue);
 

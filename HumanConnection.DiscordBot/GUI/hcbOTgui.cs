@@ -46,11 +46,13 @@ namespace HumanConnection.DiscordBot
         private void LaunchBot(object sender, EventArgs e)
         {
             Program.Run();
+            hcLogo.Visible = false;
         }
 
         private void StopBot(object sender, EventArgs e)
         {
             Program.Stop();
+            hcLogo.Visible = true;
         }
 
         private void TokenLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

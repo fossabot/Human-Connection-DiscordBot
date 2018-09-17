@@ -42,6 +42,9 @@
   <PropertyGroup>
     <ManifestCertificateThumbprint>70A293308E221C102C7A5A55A0D6CD1927605CCC</ManifestCertificateThumbprint>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\hclogo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Discord.Addons.CommandCache, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Discord.Addons.CommandCache.2.0.0\lib\netstandard1.3\Discord.Addons.CommandCache.dll</HintPath>
@@ -265,19 +268,20 @@
     <Compile Include="Modules\ServerConfigModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\ServerConfigService.cs" />
     <EmbeddedResource Include="GUI\HCBotGUI.resx">
       <DependentUpon>HCBotGUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -297,6 +301,33 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Logo - Discord.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Logo - Transparent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Logo White BG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Text Black - Transparent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Text Nice - Transparent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Text White - Transparent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hclogo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Control Logo white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HC Control Logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

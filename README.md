@@ -1,3 +1,5 @@
+![Build Status](https://img.shields.io/badge/build-alpha-red.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/badges/shields.svg) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) 
+
 # Human-Connection-DiscordBot
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 

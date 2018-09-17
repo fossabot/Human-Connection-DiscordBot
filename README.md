@@ -21,6 +21,8 @@ Develop Software: Visual Studio
 
 - [ ] Adding basic features
 
+- [ ] Adding extended features
+
 - [ ] Remove or hide testing console
 
 - [ ] Compiling working version for HC

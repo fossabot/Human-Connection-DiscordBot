@@ -285,7 +285,6 @@ namespace HumanConnection.DiscordBot
                     var chan = guild.GetTextChannel(hcBotLogChannelId);
 
                     await chan.SendMessageAsync($"Shuting down {botEmote}");
-                    await StopAsync();
                     Application.Exit();
                 }
             }

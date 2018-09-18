@@ -36,3 +36,5 @@ Develop Software: Visual Studio
 
 ## Developer Discord
 HC Discord. https://discord.gg/mVmjvNF
+
+Copyright 2018 Lala Sabathil

@@ -362,7 +362,7 @@ namespace HumanConnection.DiscordBot
 
                 await message.Channel.SendMessageAsync("", false, builder);
                 
-                if (user.GuildPermissions.Administrator)
+                if (IsAdmin(message))
                 {
                     RestUserMessage rAMsg = await message.Channel.SendMessageAsync(mention + " please look my pm for admin commands " + botEmote);
 
@@ -465,6 +465,12 @@ namespace HumanConnection.DiscordBot
             }
         }
 
+        #region Admin check
+        /// <summary>
+        /// Checks if author is admin
+        /// </summary>
+        /// <param name="msg">SocketMessage</param>
+        /// <returns>bool</returns>
         private bool IsAdmin(SocketMessage msg)
         {
             SocketGuildUser guildUser = msg.Author as SocketGuildUser;
@@ -475,12 +481,20 @@ namespace HumanConnection.DiscordBot
             }
             return false;
         }
+        #endregion
 
+        #region Message actions
+        /// <summary>
+        /// Deletes the given message in the given channel, by id
+        /// </summary>
+        /// <param name="channel">ISocketMessageChannel</param>
+        /// <param name="msgId">ulonb</param>
         private async void DeleteMsgById(ISocketMessageChannel channel, ulong msgId)
         {
             IUserMessage message = (IUserMessage)await channel.GetMessageAsync(msgId);
             await message.DeleteAsync();
         }
+        #endregion
 
         private IServiceProvider InstallServices()
         {

@@ -80,8 +80,9 @@ namespace HumanConnection.DiscordBot
         {
             get
             {
-                RegistryKey TokenKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Latias.eu IT\\PekeBot", false);
-                string token = TokenKey.GetValue("Token").ToString();
+                /*RegistryKey TokenKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Latias.eu IT\\PekeBot", false);
+                string token = TokenKey.GetValue("Token").ToString();*/
+                string token = "NDg3OTEwODYzNjk3NzM5Nzk3.Dn3dUQ.nmyHskPUyQ0kBqM_gpUBEbd_wGQ";
                 return token;
             }
         }

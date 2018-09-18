@@ -60,7 +60,8 @@ namespace HumanConnection.DiscordBot
         private DiscordSocketClient _client;
         //private CommandService _service;
         //private IServiceProvider _iservice;
-        private ServerConfigService _serverconfig;
+        //private ServerConfigService _serverconfig;
+        private AdminCommandModule _adminCmd;
         private bool running = false;
         private static readonly bool DesktopNotify = true;
 
@@ -121,7 +122,8 @@ namespace HumanConnection.DiscordBot
 
             await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Creating new Discord-Client object."));
             _client = new DiscordSocketClient();
-            _serverconfig = new ServerConfigService();
+            //_serverconfig = new ServerConfigService();
+            _adminCmd = new AdminCommandModule();
             //_service = new CommandService();
             //_iservice = InstallServices();
             running = false;
@@ -143,6 +145,7 @@ namespace HumanConnection.DiscordBot
                 await _client.LoginAsync(TokenType.Bot, token);
 
                 await _client.StartAsync();
+                await _client.SetStatusAsync(UserStatus.Online);
                 await _client.SetGameAsync("$help");
                 
                 running = true;
@@ -177,6 +180,8 @@ namespace HumanConnection.DiscordBot
             if (_client.ConnectionState == ConnectionState.Connecting || _client.ConnectionState == ConnectionState.Connected)
             {
                 SetConnectionStatus("Disconnecting..", System.Drawing.Color.Orange, 0);
+                await _client.SetGameAsync("Offline right now");
+                await _client.SetStatusAsync(UserStatus.Offline);
                 _client.LogoutAsync().Wait();
                 _client.StopAsync().Wait();
                 if (running) running = false;
@@ -451,7 +456,7 @@ namespace HumanConnection.DiscordBot
         /// </summary>Log's given LogMessage to GUI Console
         /// <param name="msg">LogMessage</param>
         /// <returns></returns>
-        private async Task Log(LogMessage msg)
+        public async Task Log(LogMessage msg)
         {
             Program.BOT_UI.AppendConsole(msg.Message);
             await Task.Delay(0);

@@ -53,9 +53,10 @@ namespace HumanConnection.DiscordBot
             HCBot_GUI_Tray.ContextMenu = contextMenu;
         }
 
-        private void CloseItem_Click(object sender, EventArgs e)
+        private async void CloseItem_Click(object sender, EventArgs e)
         {
             Program.Stop();
+            await Task.Delay(5000);
             Close();
         }
 

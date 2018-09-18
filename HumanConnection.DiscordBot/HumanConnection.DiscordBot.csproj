@@ -266,6 +266,7 @@
     <Compile Include="GUI\HCBotGUI.Designer.cs">
       <DependentUpon>HCBotGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\AdminCommandModule.cs" />
     <Compile Include="Modules\ServerConfigModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

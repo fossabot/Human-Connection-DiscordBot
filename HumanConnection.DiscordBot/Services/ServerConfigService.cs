@@ -10,7 +10,9 @@ namespace HumanConnection.DiscordBot.Services
         public async Task UpdateServerName(ICommandContext Context, string newName)
         {
             await Log(new LogMessage(LogSeverity.Info, "UpdateServerName", "Updating " + Context.Guild.Name + " to " + newName));
-            await Context.Guild.ModifyAsync(async x =>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+            await Context.Guild.ModifyAsync(async x => 
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 x.Name = newName;
             });
@@ -21,7 +23,9 @@ namespace HumanConnection.DiscordBot.Services
         #region AFK Update
         public async Task UpdateAfk (ICommandContext Context, IVoiceChannel channel, int timeout)
         {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             await Context.Guild.ModifyAsync(async x =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 x.AfkChannelId = channel.Id;
                 x.AfkTimeout = timeout;
@@ -32,7 +36,9 @@ namespace HumanConnection.DiscordBot.Services
         #region Server Verify Prepare
         public async Task PrepareServerVerify(ICommandContext Context)
         {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             await Context.Guild.ModifyAsync(async x =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 x.DefaultMessageNotifications = DefaultMessageNotifications.MentionsOnly;
                 x.VerificationLevel = VerificationLevel.High;
@@ -45,7 +51,9 @@ namespace HumanConnection.DiscordBot.Services
         {
             var mentionChannel = Context.Message.MentionedChannelIds.GetEnumerator();
             var mentionChannelObj = mentionChannel.Current;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             await Context.Guild.ModifyEmbedAsync(async x =>
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 x.ChannelId = mentionChannelObj;
                 x.Enabled = enabled;

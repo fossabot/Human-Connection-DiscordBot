@@ -1,4 +1,4 @@
-.vs/
-HumanConnection.DiscordBot/bin
-HumanConnection.DiscordBot/obj
-.github/
+/.vs/
+/HumanConnection.DiscordBot/bin
+/HumanConnection.DiscordBot/obj
+/.github/

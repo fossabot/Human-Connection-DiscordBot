@@ -187,6 +187,7 @@ namespace HumanConnection.DiscordBot
             // 
             this.HCBot_GUI_Tray.Icon = global::HumanConnection.DiscordBot.Properties.Resources.hclogo;
             this.HCBot_GUI_Tray.Text = "Human Connection\nHC Control";
+            this.HCBot_GUI_Tray.Visible = true;
             this.HCBot_GUI_Tray.DoubleClick += new System.EventHandler(this.HCBot_GUI_Tray_DoubleClick);
             // 
             // consoleSwitch

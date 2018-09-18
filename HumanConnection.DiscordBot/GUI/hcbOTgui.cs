@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -37,6 +38,25 @@ namespace HumanConnection.DiscordBot
                 RegKeyNew.SetValue("User", "admin@latias.eu", RegistryValueKind.String);
                 RegKeyNew.SetValue("FirstRunDone", false, RegistryValueKind.DWord);
             }*/
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem closeItem = new MenuItem();
+
+            contextMenu.MenuItems.AddRange(
+                new MenuItem[] {
+                    closeItem
+                }
+            );
+
+            closeItem.Index = 0;
+            closeItem.Text = "Shutdown";
+            closeItem.Click += new EventHandler(CloseItem_Click);
+            HCBot_GUI_Tray.ContextMenu = contextMenu;
+        }
+
+        private void CloseItem_Click(object sender, EventArgs e)
+        {
+            Program.Stop();
+            Close();
         }
 
         private void LaunchBot(object sender, EventArgs e)
@@ -95,8 +115,8 @@ namespace HumanConnection.DiscordBot
 
         private void HCBot_GUI_Tray_DoubleClick(object sender, EventArgs e)
         {
+            Activate();
             Show();
-            HCBot_GUI_Tray.Visible = false;
             WindowState = FormWindowState.Normal;
         }
 
@@ -126,7 +146,6 @@ namespace HumanConnection.DiscordBot
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
-                HCBot_GUI_Tray.Visible = true;
             }
         }
 

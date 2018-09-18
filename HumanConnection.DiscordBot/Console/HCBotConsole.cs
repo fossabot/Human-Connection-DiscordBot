@@ -267,19 +267,19 @@ namespace HumanConnection.DiscordBot
 
             Console.WriteLine("Received message from " + username + " in " + channel + ": " + message.Content);
 
+            // Fun command
             if (message.Content.StartsWith("$ping"))
             {
                 await message.Channel.TriggerTypingAsync();
 
                 await message.Channel.SendMessageAsync(mention + ", Pong! :3");
             }
+            // Shutdown command (admin required)
             else if (message.Content.StartsWith("!shutdown"))
             {
-                SocketGuildUser guildUser = message.Author as SocketGuildUser;
-                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
-                await msg.DeleteAsync();
+                DeleteMsgById(message.Channel, message.Id);
 
-                if (guildUser.GuildPermissions.Administrator)
+                if (IsAdmin(message))
                 {
                     var guild = _client.GetGuild(hcGuildId);
                     var chan = guild.GetTextChannel(hcBotLogChannelId);
@@ -288,6 +288,7 @@ namespace HumanConnection.DiscordBot
                     Application.Exit();
                 }
             }
+            // Command to accept rules.
             else if(message.Content.StartsWith("$accept-rules"))
             {
                 SocketGuildUser guildUser = message.Author as SocketGuildUser;
@@ -462,6 +463,23 @@ namespace HumanConnection.DiscordBot
             {
                 Program.BOT_UI.ChangeLock(Lock);
             }
+        }
+
+        private bool IsAdmin(SocketMessage msg)
+        {
+            SocketGuildUser guildUser = msg.Author as SocketGuildUser;
+
+            if (guildUser.GuildPermissions.Administrator)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private async void DeleteMsgById(ISocketMessageChannel channel, ulong msgId)
+        {
+            IUserMessage message = (IUserMessage)await channel.GetMessageAsync(msgId);
+            await message.DeleteAsync();
         }
 
         private IServiceProvider InstallServices()

@@ -136,11 +136,10 @@ namespace HumanConnection.DiscordBot
             // 
             // hcLogo
             // 
-            this.hcLogo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.hcLogo.Image = global::HumanConnection.DiscordBot.Properties.Resources.HC_Control_Logo_white;
-            this.hcLogo.Location = new System.Drawing.Point(3, 22);
+            this.hcLogo.Location = new System.Drawing.Point(3, 0);
             this.hcLogo.Name = "hcLogo";
-            this.hcLogo.Size = new System.Drawing.Size(388, 260);
+            this.hcLogo.Size = new System.Drawing.Size(388, 282);
             this.hcLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.hcLogo.TabIndex = 10;
             this.hcLogo.TabStop = false;
@@ -198,7 +197,7 @@ namespace HumanConnection.DiscordBot
             this.consoleSwitch.TabIndex = 9;
             this.consoleSwitch.Text = "Hide Console";
             this.consoleSwitch.UseVisualStyleBackColor = true;
-            this.consoleSwitch.Click += new System.EventHandler(this.consoleSwitch_Click);
+            this.consoleSwitch.Click += new System.EventHandler(this.ConsoleSwitch_Click);
             // 
             // HCBotGUI
             // 

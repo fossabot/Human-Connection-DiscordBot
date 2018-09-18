@@ -36,12 +36,8 @@ namespace HumanConnection.DiscordBot
                 RegKey.SetValue("Version", Application.ProductVersion, RegistryValueKind.String);
                 RegKeyNew.SetValue("User", "admin@latias.eu", RegistryValueKind.String);
                 RegKeyNew.SetValue("FirstRunDone", false, RegistryValueKind.DWord);
-            }
-
-            bot = new Process();
-            bot.StartInfo.WorkingDirectory = @"..\\..\\..\\PekeBot\\bin\\Debug\\";
-            bot.StartInfo.FileName = "PekeBot.exe";*/
-        }//ss
+            }*/
+        }
 
         private void LaunchBot(object sender, EventArgs e)
         {
@@ -134,7 +130,7 @@ namespace HumanConnection.DiscordBot
             }
         }
 
-        private void consoleSwitch_Click(object sender, EventArgs e)
+        private void ConsoleSwitch_Click(object sender, EventArgs e)
         {
             if(HCBotConsole.ConsoleVisible())
             {

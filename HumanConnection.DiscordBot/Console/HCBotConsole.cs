@@ -273,6 +273,22 @@ namespace HumanConnection.DiscordBot
 
                 await message.Channel.SendMessageAsync(mention + ", Pong! :3");
             }
+            else if (message.Content.StartsWith("!shutdown"))
+            {
+                SocketGuildUser guildUser = message.Author as SocketGuildUser;
+                IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
+                await msg.DeleteAsync();
+
+                if (guildUser.GuildPermissions.Administrator)
+                {
+                    var guild = _client.GetGuild(hcGuildId);
+                    var chan = guild.GetTextChannel(hcBotLogChannelId);
+
+                    await chan.SendMessageAsync($"Shuting down {botEmote}");
+                    await StopAsync();
+                    Application.Exit();
+                }
+            }
             else if(message.Content.StartsWith("$accept-rules"))
             {
                 SocketGuildUser guildUser = message.Author as SocketGuildUser;

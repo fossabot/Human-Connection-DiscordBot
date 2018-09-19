@@ -1,4 +1,5 @@
 # Human Connection - HC Control
+![Build Status](https://img.shields.io/badge/build-alpha-red.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/badges/shields.svg) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) 
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
 ## Infos
@@ -9,6 +10,8 @@ Developer software: Visual Studio 2017
 .NET version: 4.7.1
 
 ## Status
+<span style="color: white; background-color: black;">
+
 - [x]  Forked discord bot from lulalaby repository
 
 - [x] Rewrite of bot
@@ -19,13 +22,15 @@ Developer software: Visual Studio 2017
 
 - [x]  Preparing for developing
 
-- [ ] Adding basic features
+- [x] Adding basic features
 
 - [ ] Adding extended features
 
-- [ ] Remove or hide testing console
+- [x] Remove or hide testing console
 
 - [ ] Compiling working version for HC
+
+</span>
 
 
 ## Developer discord

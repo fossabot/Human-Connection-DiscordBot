@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -36,12 +37,28 @@ namespace HumanConnection.DiscordBot
                 RegKey.SetValue("Version", Application.ProductVersion, RegistryValueKind.String);
                 RegKeyNew.SetValue("User", "admin@latias.eu", RegistryValueKind.String);
                 RegKeyNew.SetValue("FirstRunDone", false, RegistryValueKind.DWord);
-            }
+            }*/
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem closeItem = new MenuItem();
 
-            bot = new Process();
-            bot.StartInfo.WorkingDirectory = @"..\\..\\..\\PekeBot\\bin\\Debug\\";
-            bot.StartInfo.FileName = "PekeBot.exe";*/
-        }//ss
+            contextMenu.MenuItems.AddRange(
+                new MenuItem[] {
+                    closeItem
+                }
+            );
+
+            closeItem.Index = 0;
+            closeItem.Text = "Shutdown";
+            closeItem.Click += new EventHandler(CloseItem_Click);
+            HCBot_GUI_Tray.ContextMenu = contextMenu;
+        }
+
+        private async void CloseItem_Click(object sender, EventArgs e)
+        {
+            Program.Stop();
+            await Task.Delay(5000);
+            Close();
+        }
 
         private void LaunchBot(object sender, EventArgs e)
         {
@@ -64,8 +81,9 @@ namespace HumanConnection.DiscordBot
         {
             get
             {
-                RegistryKey TokenKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Latias.eu IT\\PekeBot", false);
-                string token = TokenKey.GetValue("Token").ToString();
+                /*RegistryKey TokenKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Latias.eu IT\\PekeBot", false);
+                string token = TokenKey.GetValue("Token").ToString();*/
+                string token = "NDg3OTEwODYzNjk3NzM5Nzk3.Dn3dUQ.nmyHskPUyQ0kBqM_gpUBEbd_wGQ";
                 return token;
             }
         }
@@ -99,8 +117,8 @@ namespace HumanConnection.DiscordBot
 
         private void HCBot_GUI_Tray_DoubleClick(object sender, EventArgs e)
         {
+            Activate();
             Show();
-            HCBot_GUI_Tray.Visible = false;
             WindowState = FormWindowState.Normal;
         }
 
@@ -130,7 +148,20 @@ namespace HumanConnection.DiscordBot
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
-                HCBot_GUI_Tray.Visible = true;
+            }
+        }
+
+        private void ConsoleSwitch_Click(object sender, EventArgs e)
+        {
+            if(HCBotConsole.ConsoleVisible())
+            {
+                HCBotConsole.HideConsoleWindow();
+                consoleSwitch.Text = "Show Console";
+            }
+            else
+            {
+                HCBotConsole.ShowConsoleWindow();
+                consoleSwitch.Text = "Hide Console";
             }
         }
     }

@@ -41,6 +41,7 @@ namespace HumanConnection.DiscordBot
             this.statusColor = new System.Windows.Forms.Button();
             this.consoleLog = new System.Windows.Forms.TextBox();
             this.HCBot_GUI_Tray = new System.Windows.Forms.NotifyIcon(this.components);
+            this.consoleSwitch = new System.Windows.Forms.Button();
             this.consoleGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.hcLogo)).BeginInit();
             this.SuspendLayout();
@@ -135,11 +136,10 @@ namespace HumanConnection.DiscordBot
             // 
             // hcLogo
             // 
-            this.hcLogo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.hcLogo.Image = global::HumanConnection.DiscordBot.Properties.Resources.HC_Control_Logo_white;
-            this.hcLogo.Location = new System.Drawing.Point(3, 22);
+            this.hcLogo.Location = new System.Drawing.Point(3, 0);
             this.hcLogo.Name = "hcLogo";
-            this.hcLogo.Size = new System.Drawing.Size(388, 260);
+            this.hcLogo.Size = new System.Drawing.Size(388, 282);
             this.hcLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.hcLogo.TabIndex = 10;
             this.hcLogo.TabStop = false;
@@ -187,13 +187,25 @@ namespace HumanConnection.DiscordBot
             // 
             this.HCBot_GUI_Tray.Icon = global::HumanConnection.DiscordBot.Properties.Resources.hclogo;
             this.HCBot_GUI_Tray.Text = "Human Connection\nHC Control";
+            this.HCBot_GUI_Tray.Visible = true;
             this.HCBot_GUI_Tray.DoubleClick += new System.EventHandler(this.HCBot_GUI_Tray_DoubleClick);
+            // 
+            // consoleSwitch
+            // 
+            this.consoleSwitch.Location = new System.Drawing.Point(144, 345);
+            this.consoleSwitch.Name = "consoleSwitch";
+            this.consoleSwitch.Size = new System.Drawing.Size(132, 47);
+            this.consoleSwitch.TabIndex = 9;
+            this.consoleSwitch.Text = "Hide Console";
+            this.consoleSwitch.UseVisualStyleBackColor = true;
+            this.consoleSwitch.Click += new System.EventHandler(this.ConsoleSwitch_Click);
             // 
             // HCBotGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(419, 404);
+            this.Controls.Add(this.consoleSwitch);
             this.Controls.Add(this.consoleGroup);
             this.Controls.Add(this.tokenLabel);
             this.Controls.Add(this.tokenField);
@@ -226,5 +238,6 @@ namespace HumanConnection.DiscordBot
         private System.Windows.Forms.Button statusColor;
         private System.Windows.Forms.NotifyIcon HCBot_GUI_Tray;
         private System.Windows.Forms.PictureBox hcLogo;
+        private System.Windows.Forms.Button consoleSwitch;
     }
 }

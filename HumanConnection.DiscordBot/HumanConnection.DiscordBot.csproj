@@ -8,11 +8,12 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>HumanConnection.DiscordBot</RootNamespace>
     <AssemblyName>HC Bot</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -265,6 +266,7 @@
     <Compile Include="GUI\HCBotGUI.Designer.cs">
       <DependentUpon>HCBotGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\AdminCommandModule.cs" />
     <Compile Include="Modules\ServerConfigModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

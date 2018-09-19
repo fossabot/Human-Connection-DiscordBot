@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HumanConnection.DiscordBot;
 
 namespace HumanConnection.DiscordBot
 {
@@ -26,6 +25,7 @@ namespace HumanConnection.DiscordBot
         // Connect to the bot, or cancel before the connection happens.
         public static void Run() => Task.Run(() => BOT.RunAsync(BOT_UI.GetToken));
         public static void Cancel() => Task.Run(() => BOT.CancelAsync());
-        public static void Stop() => Task.Run(() => BOT.StopAsync());
+        public static void Stop() => Task.Run((Func<Task>)(() => BOT.StopAsync()));
+        public static void Log(Discord.LogMessage log) => Task.Run(() => BOT.Log(log));
     }
 }

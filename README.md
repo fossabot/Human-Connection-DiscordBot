@@ -28,7 +28,10 @@ Develop Software: Visual Studio
 - [ ] Compiling working version for HC
 
 
-## Developer Discord
+## Developer discord
 HC Discord. https://discord.gg/mVmjvNF
 
 Copyright 2018 Lala Sabathil
+
+## Future changes
+- [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js

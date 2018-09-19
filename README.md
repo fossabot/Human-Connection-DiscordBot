@@ -1,12 +1,12 @@
-# Human-Connection-DiscordBot
+# Human Connection - HC Control
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
 ## Infos
-Sprache: C#
+Language: english / C#
 
-Develop Software: Visual Studio
+Developer software: Visual Studio 2017
 
-.NET Version: 4.7.1
+.NET version: 4.7.1
 
 ## Status
 - [x]  Forked discord bot from lulalaby repository
@@ -31,7 +31,8 @@ Develop Software: Visual Studio
 ## Developer discord
 HC Discord. https://discord.gg/mVmjvNF
 
-Copyright 2018 Lala Sabathil
-
 ## Future changes
 - [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js
+
+
+Copyright 2018 Lala Sabathil

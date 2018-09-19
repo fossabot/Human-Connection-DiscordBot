@@ -1,14 +1,13 @@
+# Human Connection - HC Control
 ![Build Status](https://img.shields.io/badge/build-alpha-red.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/badges/shields.svg) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) 
-
-# Human-Connection-DiscordBot
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
 ## Infos
-Sprache: C#
+Language: english / C#
 
-Develop Software: Visual Studio
+Developer software: Visual Studio 2017
 
-.NET Version: 4.7.1
+.NET version: 4.7.1
 
 ## Status
 <span style="color: white; background-color: black;">
@@ -34,7 +33,11 @@ Develop Software: Visual Studio
 </span>
 
 
-## Developer Discord
+## Developer discord
 HC Discord. https://discord.gg/mVmjvNF
+
+## Future changes
+- [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js
+
 
 Copyright 2018 Lala Sabathil

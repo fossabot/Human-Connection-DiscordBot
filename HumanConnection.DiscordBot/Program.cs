@@ -2,12 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HumanConnection.DiscordBot.GUI;
+using HumanConnection.DiscordBot.NativeConsole;
 
 namespace HumanConnection.DiscordBot
 {
     public class Program
     {
-        private static Mutex INSTANCE_MUTEX = new Mutex(true, "Peke Bot");
+        private static Mutex INSTANCE_MUTEX = new Mutex(true, "HC Control");
         public static HCBotGUI BOT_UI = new HCBotGUI();
         private static HCBotConsole BOT = new HCBotConsole();
         static void Main()
@@ -19,7 +21,9 @@ namespace HumanConnection.DiscordBot
                 return;
             }
             // Start the UI.
-            try { Application.Run(BOT_UI as Form); }
+            try {
+                Application.Run(BOT_UI as Form);
+            }
             catch { Console.WriteLine("Failed to run."); }
         }
         // Connect to the bot, or cancel before the connection happens.

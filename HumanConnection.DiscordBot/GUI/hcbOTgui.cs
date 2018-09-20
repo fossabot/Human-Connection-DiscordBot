@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace HumanConnection.DiscordBot
+namespace HumanConnection.DiscordBot.GUI
 {
     public partial class HCBotGUI : Form
     {
@@ -63,13 +63,11 @@ namespace HumanConnection.DiscordBot
         private void LaunchBot(object sender, EventArgs e)
         {
             Program.Run();
-            hcLogo.Visible = false;
         }
 
         private void StopBot(object sender, EventArgs e)
         {
             Program.Stop();
-            hcLogo.Visible = true;
         }
 
         private void TokenLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -98,7 +96,7 @@ namespace HumanConnection.DiscordBot
             this.statusBox.Text = s;
             this.statusColor.BackColor = statusColor;
             this.statusColor.Text = s.Substring(0, 1);
-            if (HCBotConsole.GetDesktopNotifications())
+            if (NativeConsole.HCBotConsole.GetDesktopNotifications())
             {
                 HCBot_GUI_Tray.BalloonTipText = s;
                 HCBot_GUI_Tray.ShowBalloonTip(1000);
@@ -151,18 +149,58 @@ namespace HumanConnection.DiscordBot
             }
         }
 
-        private void ConsoleSwitch_Click(object sender, EventArgs e)
+        #region Native console switch
+        private void ToggleNativeConsole(object sender, EventArgs e)
         {
-            if(HCBotConsole.ConsoleVisible())
+            if(NativeConsole.HCBotConsole.ConsoleVisible())
             {
-                HCBotConsole.HideConsoleWindow();
-                consoleSwitch.Text = "Show Console";
+                NativeConsole.HCBotConsole.HideConsoleWindow();
+                consoleSwitch.Text = "Show native console";
             }
             else
             {
-                HCBotConsole.ShowConsoleWindow();
-                consoleSwitch.Text = "Hide Console";
+                NativeConsole.HCBotConsole.ShowConsoleWindow();
+                consoleSwitch.Text = "Hide native console";
             }
         }
+        #endregion
+
+        #region Toggle modules
+        private void ToggleAdminModule(object sender, EventArgs e)
+        {
+            NativeConsole.HCBotConsole.AdminModuleEnabled = !NativeConsole.HCBotConsole.AdminModuleEnabled;
+            adminModuleConfig.Text = NativeConsole.HCBotConsole.GetAdminModuleText();
+        }
+
+        private void ToggleGreetModule(object sender, EventArgs e)
+        {
+            NativeConsole.HCBotConsole.GreetModuleEnabled = !NativeConsole.HCBotConsole.GreetModuleEnabled;
+            greetModuleConfig.Text = NativeConsole.HCBotConsole.GetGreetModuleText();
+        }
+
+        private void ToggleActivityModule(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ToggleBirthdayModule(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ToggleGuidanceModule(object sender, EventArgs e)
+        {
+            NativeConsole.HCBotConsole.GuidanceModuleEnabled = !NativeConsole.HCBotConsole.GuidanceModuleEnabled;
+            guidanceModuleConfig.Text = NativeConsole.HCBotConsole.GetGuidanceModuleText();
+        }
+        #endregion
+
+        #region Autoscroll log
+        private void AutoScrollText(object sender, EventArgs e)
+        {
+            consoleLog.SelectionStart = consoleLog.TextLength;
+            consoleLog.ScrollToCaret();
+        }
+        #endregion
     }
 }

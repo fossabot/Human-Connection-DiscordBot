@@ -31,12 +31,16 @@ using System.Threading;
 using System.Linq;
 #endregion
 
-namespace HumanConnection.DiscordBot
+namespace HumanConnection.DiscordBot.NativeConsole
 {
     public class HCBotConsole
     {
-        #region Global variables
+        public HCBotConsole()
+        {
+            HideConsoleWindow();
+        }
 
+        #region Global variables
         private static bool visible = true;
 
         public static string ConnectionStatus = "Disconnected";
@@ -61,12 +65,89 @@ namespace HumanConnection.DiscordBot
         //private CommandService _service;
         //private IServiceProvider _iservice;
         //private ServerConfigService _serverconfig;
-        private AdminCommandModule _adminCmd;
         private bool running = false;
         private static readonly bool DesktopNotify = true;
 
         public static bool GetDesktopNotifications() { return DesktopNotify; }
 
+        #region Module config
+        private AdminCommandModule _adminCmd;
+
+        public static bool AdminModuleEnabled = false;
+        public static bool GreetModuleEnabled = false;
+        public static bool ActivityModuleEnabled = false;
+        public static bool BirthdayModuleEnabled = false;
+        public static bool GuidanceModuleEnabled = false;
+
+        public static string GetAdminModuleText()
+        {
+            var text = String.Empty;
+            if(AdminModuleEnabled)
+            {
+                text = "Admin" + Environment.NewLine + Environment.NewLine + "enabled";
+            } else
+            {
+                text = "Admin" + Environment.NewLine + Environment.NewLine + "disabled";
+            }
+            return text;
+        }
+
+        public static string GetGreetModuleText()
+        {
+            var text = String.Empty;
+            if (GreetModuleEnabled)
+            {
+                text = "Greet" + Environment.NewLine + Environment.NewLine + "enabled";
+            }
+            else
+            {
+                text = "Greet" + Environment.NewLine + Environment.NewLine + "disabled";
+            }
+            return text;
+        }
+        
+        public static string GetActivityModuleText()
+        {
+            var text = String.Empty;
+            if (ActivityModuleEnabled)
+            {
+                text = "Activity" + Environment.NewLine + Environment.NewLine + "enabled";
+            }
+            else
+            {
+                text = "Activity" + Environment.NewLine + Environment.NewLine + "disabled";
+            }
+            return text;
+        }
+        
+        public static string GetBirthdayModuleText()
+        {
+            var text = String.Empty;
+            if (BirthdayModuleEnabled)
+            {
+                text = "Birthday" + Environment.NewLine + Environment.NewLine + "enabled";
+            }
+            else
+            {
+                text = "Birthday" + Environment.NewLine + Environment.NewLine + "disabled";
+            }
+            return text;
+        }
+
+        public static string GetGuidanceModuleText()
+        {
+            var text = String.Empty;
+            if (GuidanceModuleEnabled)
+            {
+                text = "Guidance" + Environment.NewLine + Environment.NewLine + "enabled";
+            }
+            else
+            {
+                text = "Guidance" + Environment.NewLine + Environment.NewLine + "disabled";
+            }
+            return text;
+        }
+        #endregion
         #endregion
 
         #region Console
@@ -121,13 +202,16 @@ namespace HumanConnection.DiscordBot
             }
 
             await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Creating new Discord-Client object."));
+            Program.Log(new LogMessage(LogSeverity.Info, "Admin Module", "Admin modul: " + AdminModuleEnabled.ToString()));
+            Program.Log(new LogMessage(LogSeverity.Info, "Greet Module", "Greet modul: " + GreetModuleEnabled.ToString()));
+            Program.Log(new LogMessage(LogSeverity.Info, "Guidance Module", "Guidance modul: " + GuidanceModuleEnabled.ToString()));
             _client = new DiscordSocketClient();
             //_serverconfig = new ServerConfigService();
             _adminCmd = new AdminCommandModule();
             //_service = new CommandService();
             //_iservice = InstallServices();
             running = false;
-            
+
             SetConnectionStatus("Connecting", System.Drawing.Color.GreenYellow, 0);
 
             try
@@ -147,7 +231,7 @@ namespace HumanConnection.DiscordBot
                 await _client.StartAsync();
                 await _client.SetStatusAsync(UserStatus.Online);
                 await _client.SetGameAsync("$help");
-                
+
                 running = true;
 
                 SetConnectionStatus("Connected", System.Drawing.Color.DarkGreen, 1);
@@ -188,7 +272,8 @@ namespace HumanConnection.DiscordBot
                 SetConnectionStatus("Disconnected", System.Drawing.Color.Red, 2);
                 Program.BOT_UI.ChangeLock(2);
                 await Task.Delay(0);
-            } else
+            }
+            else
             {
                 return;
             }
@@ -300,20 +385,20 @@ namespace HumanConnection.DiscordBot
                 }
             }
             // Command to accept rules.
-            else if(message.Content.StartsWith("$accept-rules"))
+            else if (message.Content.StartsWith("$accept-rules"))
             {
                 SocketGuildUser guildUser = message.Author as SocketGuildUser;
                 SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
 
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
                 IEmote emote = guild.Emotes.First(e => e.Name == "hcwhite");
-                
+
                 await msg.AddReactionAsync(emote);
                 await guildUser.RemoveRoleAsync(guild.GetRole(484463156219871232));
                 await guildUser.AddRoleAsync(guild.GetRole(hcMemberGroupId));
                 await msg.DeleteAsync();
             }
-            else if(message.Content.Contains("Human-Connection") || message.Content.Contains("HC") || message.Content.Contains("Human Connection") || message.Content.Contains("hc"))
+            else if (message.Content.Contains("Human-Connection") || message.Content.Contains("HC") || message.Content.Contains("Human Connection") || message.Content.Contains("hc"))
             {
                 SocketGuild guild = ((SocketGuildChannel)message.Channel).Guild;
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
@@ -372,7 +457,7 @@ namespace HumanConnection.DiscordBot
                 builder.WithColor(Color.Blue);
 
                 await message.Channel.SendMessageAsync("", false, builder);
-                
+
                 if (IsAdmin(message))
                 {
                     RestUserMessage rAMsg = await message.Channel.SendMessageAsync(mention + " please look my pm for admin commands " + botEmote);
@@ -399,14 +484,14 @@ namespace HumanConnection.DiscordBot
                     adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
                     adminBuilder.WithFooter(embedAdminFooter);
                     adminBuilder.WithColor(Color.DarkRed);
-                    
+
                     await message.Author.SendMessageAsync("", false, adminBuilder);
 
                     await Task.Delay(2000);
                     await rAMsg.DeleteAsync();
                 }
             }
-            else if(message.Content.StartsWith("$author"))
+            else if (message.Content.StartsWith("$author"))
             {
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
 

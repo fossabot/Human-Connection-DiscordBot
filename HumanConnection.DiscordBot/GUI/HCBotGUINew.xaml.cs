@@ -24,5 +24,10 @@ namespace HumanConnection.DiscordBot.GUI
         {
             InitializeComponent();
         }
+
+        private void logConsole_Drop(object sender, DragEventArgs e)
+        {
+
+        }
     }
 }

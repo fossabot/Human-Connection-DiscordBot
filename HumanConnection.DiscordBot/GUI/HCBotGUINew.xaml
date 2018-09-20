@@ -6,7 +6,28 @@
              xmlns:local="clr-namespace:HumanConnection.DiscordBot.GUI"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+    <Grid RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleY="1" ScaleX="1"/>
+                <SkewTransform AngleY="0" AngleX="0"/>
+                <RotateTransform Angle="0"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                <GradientStop Color="Black"/>
+                <GradientStop Color="#FF4CBB19" Offset="0.909"/>
+                <GradientStop Color="#FE000100" Offset="0.049"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <TextBlock x:Name="logConsole" HorizontalAlignment="Left" Margin="40.528,49.339,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="365.061" Width="363.956" Background="#FF8E9697" FontFamily="Consolas" FontSize="16" Text="Discord Bot - Log&#xD;&#xA;" Cursor="IBeam"/>
+        <Image x:Name="HCImage" Margin="40.528,49.339,395.516,36.705" Source="pack://siteoforigin:,,,/Resources/HC Control Logo white.png" Stretch="Fill" Visibility="Hidden"/>
+        <Grid Margin="427.312,389.203,39.111,36.705">
+            <PasswordBox HorizontalAlignment="Left" VerticalAlignment="Top" Height="24.092" Width="205.119"/>
+            <Button Content="Set as new token" HorizontalAlignment="Left" Margin="210.119,0,0,0" VerticalAlignment="Top" Width="123.458" Height="24.092"/>
+        </Grid>
+        <ToggleButton Content="Show native console" HorizontalAlignment="Left" Margin="427.312,311.892,0,0" VerticalAlignment="Top" Width="191.903" ScrollViewer.VerticalScrollBarVisibility="Disabled" IsThreeState="True"/>
     </Grid>
 </UserControl>

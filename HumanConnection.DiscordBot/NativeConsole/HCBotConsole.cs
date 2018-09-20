@@ -319,7 +319,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         #region Discord Logging
         private async Task LogUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
         {
-            await channel.SendMessageAsync($"**Join**\n{user.Mention} ist dem Server beigetreten. ");// Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
+            await channel.SendMessageAsync($"**Join**\n{user.Mention} ({user.Username}) ist dem Server beigetreten. ");// Eine Willkommensnachricht wurde sowohl in {hcDeChannelMention} als auch in {hcEnChannelMention} gesendet. User wird der Gruppe _{guild.GetRole(484463156219871232).Name}_ zugeteilt.");
             await user.AddRoleAsync(guild.GetRole(484463156219871232));
         }
 
@@ -327,7 +327,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         {
             SocketGuild guild = user.Guild;
             SocketTextChannel logChannel = guild.GetTextChannel(hcBotLogChannelId);
-            await logChannel.SendMessageAsync($"**Leave**\n{user.Mention} ist vom Server gegangen.");
+            await logChannel.SendMessageAsync($"**Leave**\n{user.Mention} ( {user.Username} | {user.Nickname} ) ist vom Server gegangen.");
         }
 
         private async Task LogReady()

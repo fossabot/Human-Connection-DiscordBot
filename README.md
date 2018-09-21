@@ -16,7 +16,7 @@ Developer Software: Visual Studio 2017
 
 - [x] Rewrite User Commands
 
-- [ ] Rewrite Admin Commands
+- [x] Rewrite Admin Commands
 
 - [ ] First test run
 

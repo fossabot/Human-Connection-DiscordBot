@@ -24,7 +24,6 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using Windows.UI.Notifications;
-using HumanConnection.DiscordBot.Services;
 using HumanConnection.DiscordBot.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
@@ -62,16 +61,13 @@ namespace HumanConnection.DiscordBot.NativeConsole
         public ulong hcBotLogChannelId = 490977974787768353;
 
         private DiscordSocketClient _client;
-        //private CommandService _service;
-        //private IServiceProvider _iservice;
-        //private ServerConfigService _serverconfig;
         private bool running = false;
         private static readonly bool DesktopNotify = true;
 
         public static bool GetDesktopNotifications() { return DesktopNotify; }
 
         #region Module config
-        private AdminCommandModule _adminCmd;
+        public static AdminCommandModule adminCommand;
 
         public static bool AdminModuleEnabled = false;
         public static bool GreetModuleEnabled = false;
@@ -206,12 +202,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
             Program.Log(new LogMessage(LogSeverity.Info, "Greet Module", "Greet modul: " + GreetModuleEnabled.ToString()));
             Program.Log(new LogMessage(LogSeverity.Info, "Guidance Module", "Guidance modul: " + GuidanceModuleEnabled.ToString()));
             _client = new DiscordSocketClient();
-            //_serverconfig = new ServerConfigService();
-            _adminCmd = new AdminCommandModule();
-            //_service = new CommandService();
-            //_iservice = InstallServices();
             running = false;
-
             SetConnectionStatus("Connecting", System.Drawing.Color.GreenYellow, 0);
 
             try
@@ -219,13 +210,14 @@ namespace HumanConnection.DiscordBot.NativeConsole
 
                 _client.Log += Log;
                 _client.Ready += ReadyAsync;
-                _client.MessageReceived += MessageReceivedAsync;
+                _client.MessageReceived += MessageHandle;
                 //_client.ReactionAdded += ReactionAddedAsync;
                 //_client.ReactionRemoved += ReactionRemovedAsync;
                 _client.UserJoined += UserJoinedAsync;
                 _client.UserLeft += LogUserLeaveAsync;
 
                 await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Starting"));
+                
                 await _client.LoginAsync(TokenType.Bot, token);
 
                 await _client.StartAsync();
@@ -284,6 +276,10 @@ namespace HumanConnection.DiscordBot.NativeConsole
         private async Task ReadyAsync()
         {
             Console.WriteLine($"{_client.CurrentUser} is connected!");
+            if (AdminModuleEnabled)
+            {
+                adminCommand = new AdminCommandModule(_client, _client.GetGuild(hcGuildId).GetTextChannel(hcBotLogChannelId));
+            }
             await LogReady();
         }
         #endregion
@@ -316,6 +312,16 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
+        #region Message handle
+        private async Task MessageHandle(SocketMessage msg)
+        {
+            if(msg.Content.StartsWith("!"))
+            {
+                await adminCommand.HandleMessage(msg);
+            }
+        }
+        #endregion
+
         #region Discord Logging
         private async Task LogUserJoin(SocketTextChannel channel, SocketGuildUser user, IGuild guild)
         {
@@ -335,7 +341,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
             await _client.GetGuild(hcGuildId).GetTextChannel(hcBotLogChannelId).SendMessageAsync($"**Info**\nHC Control auf Posten.");
         }
         #endregion
-
+        
         #region Message received Async - Commands
         private async Task MessageReceivedAsync(SocketMessage message)
         {
@@ -406,8 +412,8 @@ namespace HumanConnection.DiscordBot.NativeConsole
 
                 await msg.AddReactionAsync(emote);
             }
-            #region test failed
             /*
+            #region test failed
             else if(message.Content.StartsWith("$server update name"))
             {
                 var newname = message.Content.Replace("^server update name ", "");
@@ -422,8 +428,9 @@ namespace HumanConnection.DiscordBot.NativeConsole
                 {
                     await message.Channel.SendMessageAsync($"Oh no!!! {mention}, update failed..");
                 }
-            }*/
+            }
             #endregion
+            */
             else if (message.Content.StartsWith("$help"))
             {
                 await message.Channel.TriggerTypingAsync();
@@ -520,7 +527,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
 
                 await message.Author.SendMessageAsync("", false, builder);
                 await msg.DeleteAsync();
-            }
+            }/*
             else if (message.Content.StartsWith("$") || message.Content.StartsWith("!"))
             {
                 IUserMessage msg = (IUserMessage)await message.Channel.GetMessageAsync(message.Id);
@@ -531,10 +538,10 @@ namespace HumanConnection.DiscordBot.NativeConsole
                 await Task.Delay(5000);
                 await msg.DeleteAsync();
                 await rMsg.DeleteAsync();
-            }
+            }*/
         }
         #endregion
-
+        
         #region Logging
         /// <summary>
         /// 
@@ -600,46 +607,10 @@ namespace HumanConnection.DiscordBot.NativeConsole
         /// </summary>
         /// <param name="channel">ISocketMessageChannel</param>
         /// <param name="msgId">ulonb</param>
-        private async void DeleteMsgById(ISocketMessageChannel channel, ulong msgId)
+        public async Task DeleteMsgById(ISocketMessageChannel channel, ulong msgId)
         {
             IUserMessage message = (IUserMessage)await channel.GetMessageAsync(msgId);
             await message.DeleteAsync();
-        }
-        #endregion
-
-        #region Things
-        private IServiceProvider InstallServices()
-        {
-            ServiceCollection services = new ServiceCollection();
-
-            // Add all additional services here.
-            //services.AddSingleton<AdminService>(); // AdminModule : AdminService
-            //services.AddSingleton<AudioService>(); // AudioModule : AudioService
-            //services.AddSingleton<ChatService>(); // ChatModule : ChatService
-
-            // Return the service provider.
-            return services.BuildServiceProvider();
-        }
-
-        private async Task InstallCommands()
-        {
-            // Before we install commands, we should check if everything was set up properly. Check if logged in.
-            if (_client.LoginState != LoginState.LoggedIn) return;
-
-            // Hook the MessageReceived Event into our Command Handler
-            _client.MessageReceived += MessageReceivedAsync;
-
-            // Add tasks to send Messages, and userJoined to appropriate places
-            _client.Ready += ReadyAsync;
-            /*_client.UserJoined += UserJoined;
-            _client.UserLeft += UserLeft;
-            _client.Connected += Connected;
-            _client.Disconnected += Disconnected;*/
-            _client.Log += Log;
-
-            // Discover all of the commands in this assembly and load them.
-            //await _service.AddModulesAsync(Assembly.GetEntryAssembly());
-            await Task.Delay(-1);
         }
         #endregion
     }

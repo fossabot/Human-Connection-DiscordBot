@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Discord;
+using Discord.WebSocket;
+using HumanConnection.DiscordBot.GUI;
+using HumanConnection.DiscordBot.NativeConsole;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HumanConnection.DiscordBot.GUI;
-using HumanConnection.DiscordBot.NativeConsole;
 
 namespace HumanConnection.DiscordBot
 {
@@ -34,5 +36,6 @@ namespace HumanConnection.DiscordBot
         public static void Cancel() => Task.Run(() => BOT.CancelAsync());
         public static void Stop() => Task.Run((Func<Task>)(() => BOT.StopAsync()));
         public static void Log(Discord.LogMessage log) => Task.Run(() => BOT.Log(log));
+        public static void DelMsg(ISocketMessageChannel channel, ulong id) => Task.Run(() => BOT.DeleteMsgById(channel, id));
     }
 }

@@ -7,20 +7,18 @@
 ## Infos
 Language: english / C#
 
-Developer software: Visual Studio 2017
+Developer Software: Visual Studio 2017
 
-.NET Core version: 2.1
+.NET Core Version: 2.1
 
 ## Status
 <span style="color: white; background-color: black;">
 
-- [x] Rewrite of bot
+- [x] Rewrite User Commands
 
-- [ ]  First test run
+- [-] Rewrite Admin Commands
 
-- [x]  Preparing for developing
-
-- [x] Adding basic features
+- [ ] First test run
 
 - [ ] Adding extended features
 

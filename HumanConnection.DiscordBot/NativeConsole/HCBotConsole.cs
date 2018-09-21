@@ -1,43 +1,38 @@
 ﻿#region Using directives
 using Discord;
-using Discord.WebSocket;
-using Discord.Addons;
-using Discord.Addons.PrefixService;
-using Discord.Audio;
-using Discord.Audio.Streams;
-using Discord.Commands;
-using Discord.Commands.Builders;
-using Discord.Webhook;
 using Discord.Rest;
-using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
+using Discord.Webhook;
+using Discord.WebSocket;
+using HumanConnection.DiscordBot.Modules;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.System;
+using System;
 using System.Diagnostics;
-using Windows.Data.Xml.Dom;
-using System.Security.Policy;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+using System.Security.Policy;
 using System.Text;
-using Windows.UI.Notifications;
-using HumanConnection.DiscordBot.Modules;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
-using System.Linq;
+using System.Threading.Tasks;
+using Windows.UI.Notifications;
+using System.Windows.Forms;
 #endregion
 
 namespace HumanConnection.DiscordBot.NativeConsole
 {
     public class HCBotConsole
     {
+        #region Entrypoint - do not change
         public HCBotConsole()
         {
             HideConsoleWindow();
         }
+        #endregion
 
         #region Global variables
         private static bool visible = true;
@@ -65,8 +60,9 @@ namespace HumanConnection.DiscordBot.NativeConsole
         private static readonly bool DesktopNotify = true;
 
         public static bool GetDesktopNotifications() { return DesktopNotify; }
+        #endregion
 
-        #region Module config
+        #region Module config - new layout
         public static AdminCommandModule adminCommand;
 
         public static bool AdminModuleEnabled = false;
@@ -144,9 +140,8 @@ namespace HumanConnection.DiscordBot.NativeConsole
             return text;
         }
         #endregion
-        #endregion
 
-        #region Console
+        #region Console - new layout
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool AllocConsole();
 
@@ -188,7 +183,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Run Async
+        #region Run Async - new layout
         public async Task RunAsync(string token)
         {
             if (_client != null)
@@ -211,10 +206,8 @@ namespace HumanConnection.DiscordBot.NativeConsole
                 _client.Log += Log;
                 _client.Ready += ReadyAsync;
                 _client.MessageReceived += MessageHandle;
-                //_client.ReactionAdded += ReactionAddedAsync;
-                //_client.ReactionRemoved += ReactionRemovedAsync;
-                _client.UserJoined += UserJoinedAsync;
-                _client.UserLeft += LogUserLeaveAsync;
+                /*_client.UserJoined += UserJoinedAsync;
+                _client.UserLeft += LogUserLeaveAsync;*/
 
                 await Log(new LogMessage(LogSeverity.Info, "RunAsync", "Starting"));
                 
@@ -243,14 +236,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Cancel Async
-        public async Task CancelAsync()
-        {
-            await Task.Delay(0);
-        }
-        #endregion
-
-        #region Stop Async
+        #region Stop Async - new layout
         public async Task StopAsync()
         {
             if (_client.ConnectionState == ConnectionState.Connecting || _client.ConnectionState == ConnectionState.Connected)
@@ -272,7 +258,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Ready Async
+        #region Ready Async - new layout
         private async Task ReadyAsync()
         {
             Console.WriteLine($"{_client.CurrentUser} is connected!");
@@ -312,7 +298,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Message handle
+        #region Message handle - new layout
         private async Task MessageHandle(SocketMessage msg)
         {
             if(msg.Content.StartsWith("!"))
@@ -379,7 +365,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
             // Shutdown command (admin required)
             else if (message.Content.StartsWith("!shutdown"))
             {
-                DeleteMsgById(message.Channel, message.Id);
+                await DeleteMsgById(message.Channel, message.Id);
 
                 if (IsAdmin(message))
                 {
@@ -555,7 +541,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Connection status update
+        #region Connection status update - new layout
         /// <summary>
         /// Set's the status of the connection in the GUI
         /// </summary>
@@ -565,14 +551,6 @@ namespace HumanConnection.DiscordBot.NativeConsole
         /// <param name="arg">Exception</param>
         private void SetConnectionStatus(string s, System.Drawing.Color color, int Lock, Exception arg = null)
         {
-            /*string tokenRaw = "30 82 02 0a 02 82 02 01 00 ca 50 92 61 40 89 ff c8 b9 5b 45 69 f2 28 e6 5c 07 51 f7 75 3a 66 6b 86 45 53 cb b6 82 06 98 ce 60 0f f0 34 32 1d 3d c9 f0 cc e8 74 1c 15 2a e5 ca 6c 6d 3d 40 bf 80 2b e8 63 ee 84 5f ea f5 ff f6 d5 ce f7 59 d8 aa cd bc 80 8c fa 5c 5a c1 95 2a eb 36 25 74 d3 59 e9 56 d4 cd 99 e2 34 b7 89 59 a4 23 ea 9c bf cd b3 e9 48 19 6b 20 da e8 b9 bc 8c 8c e4 6c ba f6 53 c7 5d 7c ab 67 4f 0a 44 99 9e 84 15 9e 1c 9b 43 ac 84 91 66 a2 35 66 3e d4 f4 c5 9b 0c 6b ad 76 45 2a b5 5b 06 ce ab 3d 79 23 1d a0 00 e8 0f bb e4 41 60 c5 ff 21 8f b7 af 10 03 60 69 fb 12 05 c6 b2 0a bd be ef 9f 99 b8 0a 29 2b 15 83 45 27 1f 14 16 48 46 7d cc 12 98 1c 88 48 85 3a c6 7d c6 40 06 91 29 cd ab 5a 25 1d 1a 37 49 3b b0 a1 b9 d5 6b 0d 42 e3 6f d9 78 32 00 5c d4 f8 c0 a1 51 e9 02 a0 53 68 1a 1e ea e7 69 81 5d a6 d9 48 2b 7d e9 13 e0 6e 48 17 a8 c2 35 ab 1c c5 87 c1 35 36 04 aa 40 e0 74 24 66 a4 66 69 8a aa fd 96 27 31 fb d3 30 72 bd 74 ca ad dd 3d b8 72 de c2 93 5c 37 e8 80 4a 6a 1a 1b 7b 8d 6a 6c a5 80 e7 62 68 28 36 17 fd 00 68 ba ee 30 e7 e0 6e 8e 85 51 59 3e f0 fb 7e 7c d1 d6 a2 ee e0 0b b8 9d 03 a9 a3 2e 48 3c 7b 1a 5e e8 26 29 67 8c 79 7d 14 94 73 6f cc 66 4a 97 c2 3f 08 95 ef 46 51 94 e2 ad df 8d 23 fd 08 fa a3 9f b1 1f ac f9 a3 c5 23 8a ee e8 98 28 7a f4 aa 3a 91 2d a5 77 d3 bf b8 7c 43 e9 27 af 57 d9 39 39 49 2a 86 68 ac 8d d1 29 40 4b 7e 8a 8f 60 c5 36 ef 97 69 88 91 7c ab 92 80 d4 64 6f f3 50 87 14 6c a7 86 64 84 a0 e6 01 05 0e a4 b9 3a 7a 77 b4 09 9b ea 2b 03 71 35 56 43 b7 ab f0 d7 f2 c5 2f 69 87 9b 3e 61 0a 7c 47 12 a9 d1 60 da cd b7 02 03 01 00 01";
-            byte[] keyToken = Encoding.ASCII.GetBytes(tokenRaw);
-            ApplicationId id = new ApplicationId(keyToken, "Peke Bot", Version.Parse(Application.ProductVersion), "x64", Application.CurrentCulture.Name);*/
-
-            /*string title = "Peke Bot - Status";
-            string content = status;
-            string image = "https://img.bb-official.com/PekeBotApp.jpg";*/
-
             ConnectionStatus = s;
             if (arg != null) Console.WriteLine(arg);
             Program.BOT_UI.SetConnectionStatus(s, color);
@@ -583,7 +561,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Admin check
+        #region Admin check - new layout
         /// <summary>
         /// Checks if author is admin
         /// </summary>
@@ -601,7 +579,7 @@ namespace HumanConnection.DiscordBot.NativeConsole
         }
         #endregion
 
-        #region Message actions
+        #region Message actions - new layout
         /// <summary>
         /// Deletes the given message in the given channel, by id
         /// </summary>

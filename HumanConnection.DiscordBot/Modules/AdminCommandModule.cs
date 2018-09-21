@@ -1,13 +1,13 @@
-﻿using System;
-using Discord;
+﻿using Discord;
 using Discord.Net;
 using Discord.Webhook;
 using Discord.WebSocket;
 using Discord.Rest;
 using Discord.Rpc;
-using System.Threading.Tasks;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace HumanConnection.DiscordBot.Modules
 {

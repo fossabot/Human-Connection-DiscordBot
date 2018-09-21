@@ -33,9 +33,8 @@ namespace HumanConnection.DiscordBot
         }
 
         public static void Run() => Task.Run(() => BOT.RunAsync(BOT_UI.GetToken));
-        public static void Cancel() => Task.Run(() => BOT.CancelAsync());
-        public static void Stop() => Task.Run((Func<Task>)(() => BOT.StopAsync()));
-        public static void Log(Discord.LogMessage log) => Task.Run(() => BOT.Log(log));
+        public static void Stop() => Task.Run(() => BOT.StopAsync());
+        public static void Log(LogMessage log) => Task.Run(() => BOT.Log(log));
         public static void DelMsg(ISocketMessageChannel channel, ulong id) => Task.Run(() => BOT.DeleteMsgById(channel, id));
     }
 }

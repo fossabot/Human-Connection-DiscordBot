@@ -9,7 +9,7 @@ namespace HC_DBot
         {
             Console.WriteLine("Hello World!");
             Console.ReadKey();
-            using (var b = new Bot("Token"))
+            using (var b = new Bot("NDg3OTEwODYzNjk3NzM5Nzk3.Dn3dUQ.nmyHskPUyQ0kBqM_gpUBEbd_wGQ"))
             {
                 b.RunAsync().Wait();
             }

@@ -4,6 +4,20 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>HC_DBot</RootNamespace>
+    <StartupObject>HC_DBot.Program</StartupObject>
+    <ApplicationIcon>hclogo.ico</ApplicationIcon>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Authors>Lala Sabathil;Speyd3r</Authors>
+    <Company>Latias.eu IT</Company>
+    <Description>Discord Bot written in DSharp for Human Connection</Description>
+    <Copyright>Lala Sabathil</Copyright>
+    <PackageProjectUrl>https://github.com/Human-Connection/Human-Connection-DiscordBot</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Human-Connection/Human-Connection-DiscordBot/tree/dsharp-rewrite</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/Human-Connection/Human-Connection-DiscordBot/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://www.dropbox.com/s/kw6byr3livo7dc3/hclogo.ico?dl=0</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

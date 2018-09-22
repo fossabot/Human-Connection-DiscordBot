@@ -25,6 +25,7 @@
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00529" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00529" />
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00529" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
   </ItemGroup>
 
   <ItemGroup>

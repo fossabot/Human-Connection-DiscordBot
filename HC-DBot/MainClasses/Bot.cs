@@ -7,6 +7,7 @@ using System;
 using static HC_DBot.GuildStatics;
 using System.Threading;
 using DSharpPlus.Entities;
+using MySql.Data.MySqlClient;
 
 namespace HC_DBot.MainClasses
 {
@@ -15,10 +16,12 @@ namespace HC_DBot.MainClasses
         private DiscordClient Client { get; }
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
+        public static MySqlConnection connection = new MySqlConnection("SERVER=meek.moe;DATABASE=HC-DBot_;UID=HD-DBot-User;PASSWORD=idontknow;SsLMode=none");
 
         public Bot(string Token)
         {
             ShutdownRequest = new CancellationTokenSource();
+            Console.WriteLine(connection.ServerVersion);
             var cfg = new DiscordConfiguration
             {
                 Token = Token,                
@@ -29,12 +32,14 @@ namespace HC_DBot.MainClasses
             };
             Client = new DiscordClient(cfg);
             //Client.GuildMemberAdded += JoinMSG;
+            Client.GuildDownloadCompleted += AddUsers;
             CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { "$", "!" },
                 EnableDefaultHelp = false
             });
             CNext.RegisterCommands<Commands.UserCommands>();
             CNext.RegisterCommands<Commands.AdminCommands>();
+            CNext.RegisterCommands<Commands.UserConfig>();
             INext = this.Client.UseInteractivity(new InteractivityConfiguration { });
         }
 
@@ -49,6 +54,9 @@ namespace HC_DBot.MainClasses
 
         public void Dispose()
         {
+            connection.Close();
+            connection.Dispose();
+            connection = null;
             Client.Dispose();
             INext = null;
             CNext = null;
@@ -65,6 +73,55 @@ namespace HC_DBot.MainClasses
             await Client.DisconnectAsync();
             await Task.Delay(2500);
             Dispose();
+        }
+
+        public async Task AddJoinUser(GuildMemberAddEventArgs e)
+        {
+            try
+            {
+                await connection.OpenAsync();
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = connection;
+                cmd.CommandText = $"INSERT INTO `DiscordUsers` (DiscordId, Birthdate, AnsweredQuestions) "
+                                                 + $" values (?, null, null) "
+                                                 + $" ON DUPLICATE KEY UPDATE DiscordId=DiscordId";
+                cmd.Parameters.Add("DiscordId", MySqlDbType.Int64).Value = Convert.ToInt64(e.Member.Id);
+                await cmd.ExecuteNonQueryAsync();
+                await connection.CloseAsync();
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
+        }
+
+        public async Task AddUsers(GuildDownloadCompletedEventArgs e)
+        {
+            foreach (var guild in e.Guilds) //my test bot was in 2 guilds is i did this, should still work with just one
+            {
+                foreach (var user in guild.Value.Members)
+                {
+                    try
+                    {
+                        await connection.OpenAsync();
+                        MySqlCommand cmd = new MySqlCommand();
+                        cmd.Connection = connection;
+                        cmd.CommandText = $"INSERT INTO `DiscordUsersBeta` (DiscordId, Birthdate, AnsweredQuestions) "
+                                                         + $" values (?, null, null) "
+                                                         + $" ON DUPLICATE KEY UPDATE DiscordId=DiscordId";
+                        cmd.Parameters.Add("DiscordId", MySqlDbType.Int64).Value = Convert.ToInt64(user.Id);
+                        await cmd.ExecuteNonQueryAsync();
+                        await connection.CloseAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex);
+                        Console.WriteLine(ex.StackTrace);
+                    }
+                }
+            }
+            Console.WriteLine("UserAdd done!");
         }
     }
 }

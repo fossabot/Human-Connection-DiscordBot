@@ -38,7 +38,6 @@ namespace HC_DBot.MainClasses
             INext = this.Client.UseInteractivity(new InteractivityConfiguration { });
         }
 
-        public static bool WelcomeMsg = false; //I dont like this...
         public static async Task JoinMSG(GuildMemberAddEventArgs e)
         {
             await e.Guild.GetChannel(hcDeChannelId).SendMessageAsync($"Herzlich willkommen {e.Member.Mention}\n" +

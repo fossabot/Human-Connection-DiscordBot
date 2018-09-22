@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static HC_DBot.GuildStatics;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace HC_DBot.Commands
 {
@@ -30,15 +32,27 @@ namespace HC_DBot.Commands
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task WelcomeMessage(CommandContext ctx)
         {
-            if (!MainClasses.Bot.WelcomeMsg)
+            if (!Program.config.Modules.Greet)
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **enabled!**");
                 ctx.Client.GuildMemberAdded += MainClasses.Bot.JoinMSG;
+                Program.config.Modules.Greet = true;
+                using (StreamWriter file = File.CreateText(@"config.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, Program.config);
+                }
             }
             else
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **disabled!**");
                 ctx.Client.GuildMemberAdded -= MainClasses.Bot.JoinMSG;
+                Program.config.Modules.Greet = false;
+                using (StreamWriter file = File.CreateText(@"config.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, Program.config);
+                }
             }
         }
     }

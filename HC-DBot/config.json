@@ -2,6 +2,6 @@
   "Token": "",
   "Modules": {
     "Admin": true,
-    "Greet": true
+    "Greet": false
   }
 }

@@ -1,13 +1,12 @@
 ﻿using HC_DBot.MainClasses;
 using Newtonsoft.Json;
-using System;
 using System.IO;
 
 namespace HC_DBot
 {
     class Program
     {
-        private static Data config;
+        public static Data config;
 
         static void Main(string[] args)
         {
@@ -23,10 +22,14 @@ namespace HC_DBot
         }
     }
 
-    class Data
+    public class Data
     {
-        [JsonProperty("Token")]
         public string Token { get; set; }
-        //Added it as class cause maybe some more config stuff gets added!
+        public Modules Modules { get; set; }
+    }
+    public class Modules
+    {
+        public bool Admin { get; set; }
+        public bool Greet { get; set; }
     }
 }

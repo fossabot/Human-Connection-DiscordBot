@@ -25,6 +25,21 @@ namespace HC_DBot.Commands
 
         [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task Kick(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
-            => await Member.RemoveAsync(Reason); 
+            => await Member.RemoveAsync(Reason);
+
+        [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task WelcomeMessage(CommandContext ctx)
+        {
+            if (!MainClasses.Bot.WelcomeMsg)
+            {
+                await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **enabled!**");
+                ctx.Client.GuildMemberAdded += MainClasses.Bot.JoinMSG;
+            }
+            else
+            {
+                await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **disabled!**");
+                ctx.Client.GuildMemberAdded -= MainClasses.Bot.JoinMSG;
+            }
+        }
     }
 }

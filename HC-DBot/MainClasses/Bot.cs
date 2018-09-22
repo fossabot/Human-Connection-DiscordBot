@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using static HC_DBot.GuildStatics;
 using System.Threading;
+using DSharpPlus.Entities;
 
 namespace HC_DBot.MainClasses
 {
@@ -27,6 +28,7 @@ namespace HC_DBot.MainClasses
                 UseInternalLogHandler = true
             };
             Client = new DiscordClient(cfg);
+            //Client.GuildMemberAdded += JoinMSG;
             CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { "$", "!" },
                 EnableDefaultHelp = false
@@ -34,6 +36,16 @@ namespace HC_DBot.MainClasses
             CNext.RegisterCommands<Commands.UserCommands>();
             CNext.RegisterCommands<Commands.AdminCommands>();
             INext = this.Client.UseInteractivity(new InteractivityConfiguration { });
+        }
+
+        public static bool WelcomeMsg = false; //I dont like this...
+        public static async Task JoinMSG(GuildMemberAddEventArgs e)
+        {
+            await e.Guild.GetChannel(hcDeChannelId).SendMessageAsync($"Herzlich willkommen {e.Member.Mention}\n" +
+                $"Du bist auf dem Entwickler Discord von {e.Member.Username} gelandet :smile: \n\n" +
+                $"Schau bitte in {e.Guild.GetChannel(hcBotLogChannelId).Mention} für weiter Informationen, wie du mithelfen kannst.\n" +
+                $"Um die Regeln ({e.Guild.GetChannel(hcBotRegelChannelId).Mention}) zu akzeptieren, schreibe bitte `$accept-rules` in einen Channel deiner Wahl um die Rolle _{e.Guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
+            await e.Guild.GetChannel(hcEnChannelId).SendMessageAsync($"Welcome {e.Member.Mention} on the developer discord by {e.Guild.Name} {DiscordEmoji.FromGuildEmote(e.Client, hcEmote)}");
         }
 
         public void Dispose()

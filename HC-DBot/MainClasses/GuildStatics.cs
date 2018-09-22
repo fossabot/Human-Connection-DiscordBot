@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace HC_DBot
 {
@@ -14,5 +15,6 @@ namespace HC_DBot
         public static ulong hcDeChannelId = 443107905307410473;
         public static ulong hcEnChannelId = 469161003511447572;
         public static ulong hcBotLogChannelId = 490977974787768353;
+        public static CancellationTokenSource ShutdownRequest;
     }
 }

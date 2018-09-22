@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 using System;
+using static HC_DBot.GuildStatics;
 using System.Threading;
 
 namespace HC_DBot.MainClasses
@@ -13,10 +14,10 @@ namespace HC_DBot.MainClasses
         private DiscordClient Client { get; }
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
-        public static bool Shutdown = false;
 
         public Bot(string Token)
         {
+            ShutdownRequest = new CancellationTokenSource();
             var cfg = new DiscordConfiguration
             {
                 Token = Token,                
@@ -46,7 +47,7 @@ namespace HC_DBot.MainClasses
         public async Task RunAsync()
         {
             await Client.ConnectAsync();
-            while (!Shutdown)
+            while (!ShutdownRequest.IsCancellationRequested)
             {
                 await Task.Delay(25);
             }

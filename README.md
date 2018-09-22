@@ -28,7 +28,7 @@ Developer Software: Visual Studio 2017
 
 
 ## Developer discord
-HC Discord. https://discord.gg/mVmjvNF
+HC Discord. https://discord.gg/NgVpvx9
 
 ## Future changes
 - [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js

@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace HC_DBot.Commands
         [Command("help"), RequirePrefixes("$")]
         public async Task Help(CommandContext ctx)
         {
+            var invy = ctx.Client.GetInteractivity();
             var builder = new DiscordEmbedBuilder();
             builder.WithTitle("Commands of HC Control");
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
@@ -42,12 +44,11 @@ namespace HC_DBot.Commands
             builder.AddField("$ping", "Returns a friendly \"Pong\"");
             builder.WithFooter($"©2018 Lala Sabathil");
             builder.WithColor(new DiscordColor(r: 0, g: 0, b:255));
-            await ctx.RespondAsync(embed: builder.Build());
 
-            if (ctx.Member.Roles.Any(x => x.Permissions == DSharpPlus.Permissions.Administrator))
+            if (ctx.Member.Roles.Any(x => x.CheckPermission(DSharpPlus.Permissions.Administrator) == DSharpPlus.PermissionLevel.Allowed))
             {
                 var adminBuilder = new DiscordEmbedBuilder();
-                adminBuilder.WithAuthor($"©2018 Lala Sabathil | {this.GetType().ToString()}");
+                adminBuilder.WithAuthor($"©2018 Lala Sabathil");
                 adminBuilder.WithTitle("Admin commands of HC Control - Not implemented right now");
                 adminBuilder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
                 adminBuilder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
@@ -61,8 +62,39 @@ namespace HC_DBot.Commands
                 adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
                 adminBuilder.WithFooter("HC Bot", "https://github.com/Lulalaby/Human-Connection-DiscordBot/");
                 adminBuilder.WithColor(new DiscordColor(r: 255, g: 20, b: 80));
-                await ctx.Member.SendMessageAsync(embed: adminBuilder.Build());
+                var msg = await ctx.RespondAsync(embed: builder.Build());
+                await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("◀"));
+                await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
+                while (true)
+                {
+                    var Inmsg = await invy.WaitForMessageReactionAsync(msg, ctx.User, TimeSpan.FromMinutes(2));
+                    if (Inmsg.Emoji == DiscordEmoji.FromUnicode("◀") && msg.Embeds.First().Title.ToLower().StartsWith("admin"))
+                    {
+                        await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("◀"), ctx.User);
+                    }
+                    else if (Inmsg.Emoji == DiscordEmoji.FromUnicode("◀") && !msg.Embeds.First().Title.ToLower().StartsWith("admin"))
+                    {
+                        await msg.ModifyAsync(embed: builder.Build());
+                        await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("◀"), ctx.User);
+                    }
+                    else if (Inmsg.Emoji == DiscordEmoji.FromUnicode("▶") && msg.Embeds.First().Title.ToLower().StartsWith("commands"))
+                    {
+                        await msg.ModifyAsync(embed: adminBuilder.Build());
+                        await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("▶"), ctx.User);
+                    }
+                    else if (Inmsg.Emoji == DiscordEmoji.FromUnicode("▶") && msg.Embeds.First().Title.ToLower().StartsWith("commands"))
+                    {
+                        await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("▶"), ctx.User);
+                    }
+                    else
+                    {
+                        await msg.DeleteAllReactionsAsync();
+                        break;
+                    }
+                }
+                return;
             }
+            await ctx.RespondAsync(embed: builder.Build());
         }
 
         [Command("author"), RequirePrefixes("$")]

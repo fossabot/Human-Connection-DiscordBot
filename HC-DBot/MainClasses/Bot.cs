@@ -5,6 +5,7 @@ using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 using System;
 using static HC_DBot.GuildStatics;
+using HC_DBot.Module;
 using System.Threading;
 using DSharpPlus.Entities;
 using MySql.Data.MySqlClient;
@@ -13,15 +14,16 @@ namespace HC_DBot.MainClasses
 {
     class Bot : IDisposable
     {
-        private DiscordClient Client { get; }
+        private static DiscordClient Client { get; set; }
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
-        public static MySqlConnection connection = new MySqlConnection("SERVER=meek.moe;DATABASE=HC-DBot_;UID=HD-DBot-User;PASSWORD=idontknow;SsLMode=none");
+        private static RoleModule roles = new RoleModule();
+        //public static MySqlConnection connection = new MySqlConnection("SERVER=meek.moe;DATABASE=HC-DBot_;UID=HD-DBot-User;PASSWORD=idontknow;SsLMode=none");
 
         public Bot(string Token)
         {
             ShutdownRequest = new CancellationTokenSource();
-            Console.WriteLine(connection.ServerVersion);
+            //Console.WriteLine(connection.ServerVersion);
             var cfg = new DiscordConfiguration
             {
                 Token = Token,                
@@ -32,15 +34,27 @@ namespace HC_DBot.MainClasses
             };
             Client = new DiscordClient(cfg);
             //Client.GuildMemberAdded += JoinMSG;
+            Client.MessageReactionAdded += ReactorModulAdd;
+            Client.MessageReactionRemoved += ReactorModulRemove;
             Client.GuildDownloadCompleted += AddUsers;
-            CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
+            CNext = Client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { "$", "!" },
                 EnableDefaultHelp = false
             });
             CNext.RegisterCommands<Commands.UserCommands>();
             CNext.RegisterCommands<Commands.AdminCommands>();
             CNext.RegisterCommands<Commands.UserConfig>();
-            INext = this.Client.UseInteractivity(new InteractivityConfiguration { });
+            INext = Client.UseInteractivity(new InteractivityConfiguration { });
+        }
+
+        public async Task ReactorModulAdd(MessageReactionAddEventArgs e)
+        {
+            await roles.ReactOnAdd(e, Client);
+        }
+
+        public static async Task ReactorModulRemove(MessageReactionRemoveEventArgs e)
+        {
+            await roles.ReactOnRemove(e, Client);
         }
 
         public static async Task JoinMSG(GuildMemberAddEventArgs e)
@@ -54,9 +68,9 @@ namespace HC_DBot.MainClasses
 
         public void Dispose()
         {
-            connection.Close();
-            connection.Dispose();
-            connection = null;
+            //connection.Close();
+            //connection.Dispose();
+            //connection = null;
             Client.Dispose();
             INext = null;
             CNext = null;
@@ -74,9 +88,9 @@ namespace HC_DBot.MainClasses
             await Task.Delay(2500);
             Dispose();
         }
-
+        
         public async Task AddJoinUser(GuildMemberAddEventArgs e)
-        {
+        {/*
             try
             {
                 await connection.OpenAsync();
@@ -93,11 +107,11 @@ namespace HC_DBot.MainClasses
             {
                 Console.WriteLine("Error: " + ey);
                 Console.WriteLine(ey.StackTrace);
-            }
+            }*/
         }
 
         public async Task AddUsers(GuildDownloadCompletedEventArgs e)
-        {
+        {/*
             foreach (var guild in e.Guilds) //my test bot was in 2 guilds is i did this, should still work with just one
             {
                 foreach (var user in guild.Value.Members)
@@ -121,7 +135,7 @@ namespace HC_DBot.MainClasses
                     }
                 }
             }
-            Console.WriteLine("UserAdd done!");
+            Console.WriteLine("UserAdd done!");*/
         }
     }
 }

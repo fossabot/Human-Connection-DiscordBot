@@ -13,6 +13,7 @@ namespace HC_DBot.MainClasses
         private DiscordClient Client { get; }
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
+        public static bool Shutdown = false;
 
         public Bot(string Token)
         {
@@ -39,12 +40,19 @@ namespace HC_DBot.MainClasses
             Client.Dispose();
             INext = null;
             CNext = null;
+            Environment.Exit(0);
         }
 
         public async Task RunAsync()
         {
             await Client.ConnectAsync();
-            await Task.Delay(-1);
+            while (!Shutdown)
+            {
+                await Task.Delay(25);
+            }
+            await Client.DisconnectAsync();
+            await Task.Delay(2500);
+            Dispose();
         }
     }
 }

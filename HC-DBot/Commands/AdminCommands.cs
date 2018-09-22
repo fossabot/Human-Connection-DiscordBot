@@ -16,10 +16,7 @@ namespace HC_DBot.Commands
         public async Task BotShutdown(CommandContext ctx)
         {
             await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Shuting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}");
-            /*Not a good way to "shutdown" the bot but i haven't figured out
-            how services work yet so i cant use the CancelationToken.
-            There may, be other workarounds but I want to use the intended way*/
-            Environment.Exit(0);
+            MainClasses.Bot.Shutdown = true;
         }
 
         [Command("ban"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]

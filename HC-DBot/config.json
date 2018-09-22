@@ -1,3 +1,7 @@
 {
-  "Token": ""
+  "Token": "",
+  "Modules": {
+    "Admin": true,
+    "Greet": true
+  }
 }

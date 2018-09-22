@@ -16,8 +16,11 @@ namespace HC_DBot
                 string json = r.ReadToEnd();
                 config = JsonConvert.DeserializeObject<Data>(json);
             }
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            if(config.ReadKeyNeed)
+            {
+                Console.WriteLine("Hello World!");
+                Console.ReadKey();
+            }
             using (var b = new Bot(config.Token))
             {
                 b.RunAsync().Wait();
@@ -29,6 +32,10 @@ namespace HC_DBot
     {
         [JsonProperty("Token")]
         public string Token { get; set; }
+
+
+        [JsonProperty("ReadKeyNeed")]
+        public bool ReadKeyNeed { get; set; }
         //Added it as class cause maybe some more config stuff gets added!
     }
 }

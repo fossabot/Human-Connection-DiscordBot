@@ -30,8 +30,11 @@ Developer Software: Visual Studio 2017
 ## Developer discord
 HC Discord. https://discord.gg/NgVpvx9
 
+## Docker
+[Docker Community Store](https://store.docker.com/community/images/lulalaby/hccontrol)
+
 ## Future changes
 - [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js
 
 
-Copyright 2018 Lala Sabathil
+Copyright 2018 Lala Sabathil & Speyd3r

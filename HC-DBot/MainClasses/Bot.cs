@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 using System;
+using System.Data;
 using static HC_DBot.GuildStatics;
 using HC_DBot.Module;
 using System.Threading;
@@ -22,8 +23,8 @@ namespace HC_DBot.MainClasses
 
         public Bot(string Token, string mysqlCon)
         {
-            ShutdownRequest = new CancellationTokenSource();
             connection = new MySqlConnection(mysqlCon);
+            ShutdownRequest = new CancellationTokenSource();
             StartUp();
             var cfg = new DiscordConfiguration
             {
@@ -57,11 +58,17 @@ namespace HC_DBot.MainClasses
                 selectCmd.Connection = connection;
                 selectCmd.CommandText = $"SELECT * FROM guilds";
                 MySqlDataReader reader = selectCmd.ExecuteReader();
-                while(reader.Read())
+                using(reader)
                 {
-                    var serverName = reader["server"];
-                    var serverConfig = GetServerModuleConfigByUid(reader.GetInt32("id"));
-                    Console.WriteLine($"Guild: {serverName} | Config: {serverConfig}");
+                    DataTable dt = new DataTable();
+                    dt.Load(reader);
+
+                    foreach(DataRow row in dt.Rows)
+                    {
+                        var serverName = row["server"].ToString();
+                        var serverConfig = GetServerModuleConfigByUid(int.Parse(row["id"].ToString()));
+                        Console.WriteLine($"Guild: {serverName} | Config: {serverConfig}");
+                    }
                 }
                 connection.Close();
             }
@@ -79,12 +86,13 @@ namespace HC_DBot.MainClasses
             {
                 MySqlCommand selectCmdSub = new MySqlCommand();
                 selectCmdSub.Connection = connection;
-                selectCmdSub.CommandText = $"SELECT * FROM moduleConfig WHERE guildId='{Convert.ToString(id)}''";
+                selectCmdSub.CommandText = $"SELECT * FROM moduleConfig WHERE guildId='{id}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
                 if (read.Read())
                 {
                     serverConfigString = Convert.ToString(read["moduleConfig"]);
                 }
+                read.Close();
             }
             catch (Exception ey)
             {
@@ -180,6 +188,7 @@ namespace HC_DBot.MainClasses
                     guildInt = Convert.ToInt16(reader["id"]);
                 }
                 connection.Close();
+                reader.Close();
             }
             catch (Exception ey)
             {
@@ -205,6 +214,7 @@ namespace HC_DBot.MainClasses
                 {
                     guildName = Convert.ToString(reader["server"]);
                 }
+                reader.Close();
                 await connection.CloseAsync();
             }
             catch (Exception ey)

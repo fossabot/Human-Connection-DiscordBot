@@ -18,12 +18,12 @@ namespace HC_DBot.MainClasses
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
         private static RoleModule roles = new RoleModule();
-        //public static MySqlConnection connection = new MySqlConnection("SERVER=meek.moe;DATABASE=HC-DBot_;UID=HD-DBot-User;PASSWORD=idontknow;SsLMode=none");
+        public static MySqlConnection connection;
 
-        public Bot(string Token)
+        public Bot(string Token, string mysqlCon)
         {
             ShutdownRequest = new CancellationTokenSource();
-            //Console.WriteLine(connection.ServerVersion);
+            connection = new MySqlConnection(mysqlCon);
             var cfg = new DiscordConfiguration
             {
                 Token = Token,                
@@ -33,7 +33,7 @@ namespace HC_DBot.MainClasses
                 UseInternalLogHandler = true
             };
             Client = new DiscordClient(cfg);
-            //Client.GuildMemberAdded += JoinMSG;
+            Client.GuildMemberAdded += GuildMemberAddActions;
             Client.MessageReactionAdded += ReactorModulAdd;
             Client.MessageReactionRemoved += ReactorModulRemove;
             Client.GuildDownloadCompleted += AddUsers;
@@ -45,6 +45,12 @@ namespace HC_DBot.MainClasses
             CNext.RegisterCommands<Commands.AdminCommands>();
             CNext.RegisterCommands<Commands.UserConfig>();
             INext = Client.UseInteractivity(new InteractivityConfiguration { });
+        }
+
+        public async Task GuildMemberAddActions(GuildMemberAddEventArgs e)
+        {
+            await AddJoinUser(e);
+            await JoinMSG(e);
         }
 
         public async Task ReactorModulAdd(MessageReactionAddEventArgs e)
@@ -59,18 +65,14 @@ namespace HC_DBot.MainClasses
 
         public static async Task JoinMSG(GuildMemberAddEventArgs e)
         {
-            await e.Guild.GetChannel(hcDeChannelId).SendMessageAsync($"Herzlich willkommen {e.Member.Mention}\n" +
-                $"Du bist auf dem Entwickler Discord von {e.Member.Username} gelandet :smile: \n\n" +
-                $"Schau bitte in {e.Guild.GetChannel(hcBotLogChannelId).Mention} für weiter Informationen, wie du mithelfen kannst.\n" +
-                $"Um die Regeln ({e.Guild.GetChannel(hcBotRegelChannelId).Mention}) zu akzeptieren, schreibe bitte `$accept-rules` in einen Channel deiner Wahl um die Rolle _{e.Guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");
-            await e.Guild.GetChannel(hcEnChannelId).SendMessageAsync($"Welcome {e.Member.Mention} on the developer discord by {e.Guild.Name} {DiscordEmoji.FromGuildEmote(e.Client, hcEmote)}");
+           
         }
 
         public void Dispose()
         {
-            //connection.Close();
-            //connection.Dispose();
-            //connection = null;
+            connection.Close();
+            connection.Dispose();
+            connection = null;
             Client.Dispose();
             INext = null;
             CNext = null;
@@ -88,18 +90,21 @@ namespace HC_DBot.MainClasses
             await Task.Delay(2500);
             Dispose();
         }
-        
+
         public async Task AddJoinUser(GuildMemberAddEventArgs e)
-        {/*
+        {
             try
             {
+                var guildId = GetGuildById(e.Guild.Id);
                 await connection.OpenAsync();
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = connection;
-                cmd.CommandText = $"INSERT INTO `DiscordUsers` (DiscordId, Birthdate, AnsweredQuestions) "
-                                                 + $" values (?, null, null) "
-                                                 + $" ON DUPLICATE KEY UPDATE DiscordId=DiscordId";
-                cmd.Parameters.Add("DiscordId", MySqlDbType.Int64).Value = Convert.ToInt64(e.Member.Id);
+                cmd.CommandText = $"INSERT INTO `users` (discordId, discordName, guildId, notes) "
+                                                 + $" values (?, ?, ?, 'auto add') "
+                                                 + $" ON DUPLICATE KEY UPDATE discordId=discordId";
+                cmd.Parameters.Add("discordId", MySqlDbType.VarChar).Value = Convert.ToString(e.Member.Id);
+                cmd.Parameters.Add("discordName", MySqlDbType.VarChar).Value = Convert.ToString(e.Member.Username);
+                cmd.Parameters.Add("guildId", MySqlDbType.Int16).Value = guildId;
                 await cmd.ExecuteNonQueryAsync();
                 await connection.CloseAsync();
             }
@@ -107,13 +112,41 @@ namespace HC_DBot.MainClasses
             {
                 Console.WriteLine("Error: " + ey);
                 Console.WriteLine(ey.StackTrace);
-            }*/
+            }
+            Console.WriteLine("UserAdd done!");
+        }
+
+        public int GetGuildById(ulong id)
+        {
+            int guildInt = 0;
+
+            try
+            {
+                connection.Open();
+                MySqlCommand selectCmd = new MySqlCommand();
+                selectCmd.Connection = connection;
+                selectCmd.CommandText = $"SELECT id FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
+                MySqlDataReader reader = selectCmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    guildInt = Convert.ToInt16(reader["id"]);
+                }
+                connection.Close();
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
+
+            return guildInt;
         }
 
         public async Task AddUsers(GuildDownloadCompletedEventArgs e)
-        {/*
-            foreach (var guild in e.Guilds) //my test bot was in 2 guilds is i did this, should still work with just one
+        {
+            foreach (var guild in e.Guilds)
             {
+                var guildId = GetGuildById(guild.Value.Id);
                 foreach (var user in guild.Value.Members)
                 {
                     try
@@ -121,10 +154,12 @@ namespace HC_DBot.MainClasses
                         await connection.OpenAsync();
                         MySqlCommand cmd = new MySqlCommand();
                         cmd.Connection = connection;
-                        cmd.CommandText = $"INSERT INTO `DiscordUsersBeta` (DiscordId, Birthdate, AnsweredQuestions) "
-                                                         + $" values (?, null, null) "
-                                                         + $" ON DUPLICATE KEY UPDATE DiscordId=DiscordId";
-                        cmd.Parameters.Add("DiscordId", MySqlDbType.Int64).Value = Convert.ToInt64(user.Id);
+                        cmd.CommandText = $"INSERT INTO `users` (discordId, discordName, guildId, notes) "
+                                                         + $" values (?, ?, ?, 'auto add') "
+                                                         + $" ON DUPLICATE KEY UPDATE discordId=discordId";
+                        cmd.Parameters.Add("discordId", MySqlDbType.VarChar).Value = Convert.ToString(user.Id);
+                        cmd.Parameters.Add("discordName", MySqlDbType.VarChar).Value = Convert.ToString(user.Username);
+                        cmd.Parameters.Add("guildId", MySqlDbType.Int16).Value = guildId;
                         await cmd.ExecuteNonQueryAsync();
                         await connection.CloseAsync();
                     }
@@ -135,7 +170,7 @@ namespace HC_DBot.MainClasses
                     }
                 }
             }
-            Console.WriteLine("UserAdd done!");*/
+            Console.WriteLine("UserAdd done!");
         }
     }
 }

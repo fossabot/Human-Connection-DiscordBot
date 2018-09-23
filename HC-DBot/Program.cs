@@ -15,7 +15,7 @@ namespace HC_DBot
                 string json = r.ReadToEnd();
                 config = JsonConvert.DeserializeObject<Data>(json);
             }
-            using (var b = new Bot(config.Token))
+            using (var b = new Bot(config.Token, config.MysqlCon))
             {
                 b.RunAsync().Wait();
             }
@@ -25,11 +25,13 @@ namespace HC_DBot
     public class Data
     {
         public string Token { get; set; }
+        public string MysqlCon { get; set; }
         public Modules Modules { get; set; }
     }
     public class Modules
     {
         public bool Admin { get; set; }
+        public bool Role { get; set; }
         public bool Greet { get; set; }
     }
 }

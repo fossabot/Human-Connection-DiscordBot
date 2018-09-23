@@ -19,6 +19,7 @@ namespace HC_DBot.MainClasses
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
         private static RoleModule roles = new RoleModule();
+        private static GreetModule greetModule = new GreetModule();
         public static MySqlConnection connection;
 
         public Bot(string Token, string mysqlCon)
@@ -90,7 +91,7 @@ namespace HC_DBot.MainClasses
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
                 if (read.Read())
                 {
-                    serverConfigString = Convert.ToString(read["moduleConfig"]);
+                    serverConfigString = $"Admin: {Convert.ToString(read["adminModule"])} | Greet: {Convert.ToString(read["greetModule"])} | Birthday: {Convert.ToString(read["birthdayModule"])}";
                 }
                 read.Close();
             }
@@ -121,7 +122,7 @@ namespace HC_DBot.MainClasses
 
         public static async Task JoinMSG(GuildMemberAddEventArgs e)
         {
-           
+            await greetModule.GreetUser(e);
         }
 
         public void Dispose()
@@ -172,7 +173,7 @@ namespace HC_DBot.MainClasses
             Console.WriteLine("UserAdd done!");
         }
 
-        public int GetGuildIdByUid(ulong id)
+        public static int GetGuildIdByUid(ulong id)
         {
             int guildInt = 0;
 

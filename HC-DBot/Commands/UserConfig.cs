@@ -12,7 +12,7 @@ namespace HC_DBot.Commands
     {
 
         [Command("set-birthday"), Description("Set your birthday!\nPlease use this format: MM-DD-YYYY\n__Example:__ $config birthday 03-24-1994")]
-        public async Task setBDay(CommandContext ctx,[Description("Please use this format: MM-DD-YYYY\n__Example:__ $config birthday 03-24-1994")] DateTime date)
+        public async Task SetBDay(CommandContext ctx,[Description("Please use this format: MM-DD-YYYY\n__Example:__ $config birthday 03-24-1994")] DateTime date)
         {
             try
             {

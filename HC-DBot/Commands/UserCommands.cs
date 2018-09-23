@@ -2,12 +2,14 @@
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static HC_DBot.GuildStatics;
+using static HC_DBot.MainClasses.Bot;
 
 namespace HC_DBot.Commands
 {
@@ -22,8 +24,30 @@ namespace HC_DBot.Commands
         [Command("accept-rules"), RequirePrefixes("$")]
         public async Task RuleAccept(CommandContext ctx)
         {
+            ulong grantRoleId = 0;
+            int guildId = GetGuildIdByUid(ctx.Guild.Id);
+
+            try
+            {
+                await connection.OpenAsync();
+                MySqlCommand selectCmdSub = new MySqlCommand();
+                selectCmdSub.Connection = connection;
+                selectCmdSub.CommandText = $"SELECT roleId FROM guildConfig WHERE guildId='{guildId}'";
+                MySqlDataReader read = selectCmdSub.ExecuteReader();
+                if (read.Read())
+                {
+                    grantRoleId = Convert.ToUInt64(read[0]);
+                }
+                read.Close();
+                await connection.CloseAsync();
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, hcEmote));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(hcMemberGroupId));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(grantRoleId));
             await ctx.Message.DeleteAsync();
         }
 

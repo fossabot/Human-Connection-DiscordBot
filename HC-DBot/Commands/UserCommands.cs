@@ -91,7 +91,7 @@ namespace HC_DBot.Commands
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
                 while (true)
                 {
-                    var Inmsg = await invy.WaitForMessageReactionAsync(msg, ctx.User, TimeSpan.FromMinutes(2));
+                    var Inmsg = await invy.WaitForMessageReactionAsync(msg, ctx.User, TimeSpan.FromMinutes(1));
                     if (Inmsg.Emoji == DiscordEmoji.FromUnicode("◀") && msg.Embeds.First().Title.ToLower().StartsWith("admin"))
                     {
                         await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("◀"), ctx.User);
@@ -112,6 +112,7 @@ namespace HC_DBot.Commands
                     }
                     else
                     {
+                        await msg.ModifyAsync(embed: builder.Build());
                         await msg.DeleteAllReactionsAsync();
                         break;
                     }

@@ -18,16 +18,23 @@ namespace HC_DBot.Commands
         public async Task BotShutdown(CommandContext ctx)
         {
             await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Shuting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}");
+            await ctx.Message.DeleteAsync();
             ShutdownRequest.Cancel();
         }
 
         [Command("ban"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task Ban(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
-            => await Member.BanAsync(reason: Reason);
+        {
+            await Member.BanAsync(reason: Reason);
+            await ctx.Message.DeleteAsync("Admin command hide");
+        }
 
         [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task Kick(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
-            => await Member.RemoveAsync(Reason);
+        {
+            await Member.RemoveAsync(Reason);
+            await ctx.Message.DeleteAsync("Admin command hide");
+        }
 
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task WelcomeMessage(CommandContext ctx)

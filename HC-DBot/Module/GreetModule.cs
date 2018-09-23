@@ -39,8 +39,8 @@ namespace HC_DBot.Module
                     MySqlDataReader read = selectCmdSub.ExecuteReader();
                     if (read.Read())
                     {
-                        infoChannel = Convert.ToUInt64(read["ruleChannelId"]);
-                        ruleChannel = Convert.ToUInt64(read["infoChannelId"]);
+                        infoChannel = Convert.ToUInt64(read["infoChannelId"]);
+                        ruleChannel = Convert.ToUInt64(read["ruleChannelId"]);
                         cmdChannel = Convert.ToUInt64(read["cmdChannelId"]);
                         customInfo = read["customInfo"].ToString();
                         role = Convert.ToUInt64(read["roleId"]);

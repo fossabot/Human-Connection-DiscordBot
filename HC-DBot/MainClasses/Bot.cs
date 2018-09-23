@@ -24,6 +24,7 @@ namespace HC_DBot.MainClasses
         {
             ShutdownRequest = new CancellationTokenSource();
             connection = new MySqlConnection(mysqlCon);
+            StartUp();
             var cfg = new DiscordConfiguration
             {
                 Token = Token,                
@@ -45,6 +46,53 @@ namespace HC_DBot.MainClasses
             CNext.RegisterCommands<Commands.AdminCommands>();
             CNext.RegisterCommands<Commands.UserConfig>();
             INext = Client.UseInteractivity(new InteractivityConfiguration { });
+        }
+
+        public static void StartUp()
+        {
+            try
+            {
+                connection.Open();
+                MySqlCommand selectCmd = new MySqlCommand();
+                selectCmd.Connection = connection;
+                selectCmd.CommandText = $"SELECT * FROM guilds";
+                MySqlDataReader reader = selectCmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    var serverName = reader["server"];
+                    var serverConfig = GetServerModuleConfigByUid(reader.GetInt32("id"));
+                    Console.WriteLine($"Guild: {serverName} | Config: {serverConfig}");
+                }
+                connection.Close();
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
+        }
+
+        private static string GetServerModuleConfigByUid(int id)
+        {
+            var serverConfigString = string.Empty;
+            try
+            {
+                MySqlCommand selectCmdSub = new MySqlCommand();
+                selectCmdSub.Connection = connection;
+                selectCmdSub.CommandText = $"SELECT * FROM moduleConfig WHERE guildId='{Convert.ToString(id)}''";
+                MySqlDataReader read = selectCmdSub.ExecuteReader();
+                if (read.Read())
+                {
+                    serverConfigString = Convert.ToString(read["moduleConfig"]);
+                }
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
+
+            return serverConfigString;
         }
 
         public async Task GuildMemberAddActions(GuildMemberAddEventArgs e)
@@ -95,7 +143,7 @@ namespace HC_DBot.MainClasses
         {
             try
             {
-                var guildId = GetGuildById(e.Guild.Id);
+                var guildId = GetGuildIdByUid(e.Guild.Id);
                 await connection.OpenAsync();
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = connection;
@@ -116,7 +164,7 @@ namespace HC_DBot.MainClasses
             Console.WriteLine("UserAdd done!");
         }
 
-        public int GetGuildById(ulong id)
+        public int GetGuildIdByUid(ulong id)
         {
             int guildInt = 0;
 
@@ -142,11 +190,37 @@ namespace HC_DBot.MainClasses
             return guildInt;
         }
 
+        public async Task<string> GetGuildNameByUid(ulong id)
+        {
+            string guildName = String.Empty;
+
+            try
+            {
+                await connection.OpenAsync();
+                MySqlCommand selectCmd = new MySqlCommand();
+                selectCmd.Connection = connection;
+                selectCmd.CommandText = $"SELECT * FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
+                MySqlDataReader reader = selectCmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    guildName = Convert.ToString(reader["server"]);
+                }
+                await connection.CloseAsync();
+            }
+            catch (Exception ey)
+            {
+                Console.WriteLine("Error: " + ey);
+                Console.WriteLine(ey.StackTrace);
+            }
+
+            return guildName;
+        }
+
         public async Task AddUsers(GuildDownloadCompletedEventArgs e)
         {
             foreach (var guild in e.Guilds)
             {
-                var guildId = GetGuildById(guild.Value.Id);
+                var guildId = GetGuildIdByUid(guild.Value.Id);
                 foreach (var user in guild.Value.Members)
                 {
                     try

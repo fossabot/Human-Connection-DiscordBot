@@ -1,6 +1,6 @@
 {
   "Token": "NDg3OTEwODYzNjk3NzM5Nzk3.Dn3dUQ.nmyHskPUyQ0kBqM_gpUBEbd_wGQ",
-  "MysqlCon": "Server=docker.latias.eu;Database=hc-dbot;Uid=hcbot;Pwd=hcbot;SslMode=none;",
+  "MysqlCon": "Server=docker.latias.eu;Database=hc-dbot;Uid=hcbot;Pwd=hcbot;SslMode=none",
   "Modules": {
     "Admin": true,
     "Role": true,

@@ -1,6 +1,5 @@
 ![Build Status](https://img.shields.io/badge/build-alpha-red.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/badges/shields.svg) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) 
 # Human Connection - HC Control - D#+ Rewrite
-# The actual commit does not work, bacause of changes to the database backend
 
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
@@ -29,9 +28,6 @@ HC Discord. https://discord.gg/NgVpvx9
 
 ## Docker
 [Docker Community Store](https://store.docker.com/community/images/lulalaby/hccontrol)
-
-## Future changes
-- [ ] Rewrite to nodejs https://github.com/Human-Connection/discord.js
 
 
 Copyright 2018 Lala Sabathil & Speyd3r

@@ -120,6 +120,7 @@ namespace HC_DBot.Commands
                 return;
             }
             await ctx.RespondAsync(embed: builder.Build());
+            await ctx.Message.DeleteAsync("command hide");
         }
 
         [Command("author"), RequirePrefixes("$")]
@@ -142,6 +143,9 @@ namespace HC_DBot.Commands
             builder.WithUrl("https://www.latias.eu");
             builder.WithColor(new DiscordColor(r: 75, g: 80, b: 255));
             builder.WithFooter($"©2018 Lala Sabathil");
+
+            await ctx.Member.SendMessageAsync(embed: builder);
+            await ctx.Message.DeleteAsync("command hide");
         }
     }
 }

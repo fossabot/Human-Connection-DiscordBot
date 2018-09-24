@@ -1,0 +1,1 @@
+﻿Getting Emote URLs for png: https://cdn.discordapp.com/emojis/$EMOTEID.png

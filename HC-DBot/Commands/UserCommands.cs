@@ -32,7 +32,7 @@ namespace HC_DBot.Commands
                 await connection.OpenAsync();
                 MySqlCommand selectCmdSub = new MySqlCommand();
                 selectCmdSub.Connection = connection;
-                selectCmdSub.CommandText = $"SELECT roleId FROM guildConfig WHERE guildId='{guildId}'";
+                selectCmdSub.CommandText = $"SELECT roleId FROM `guilds.config` WHERE guildId='{guildId}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
                 if (read.Read())
                 {
@@ -144,8 +144,8 @@ namespace HC_DBot.Commands
             builder.WithColor(new DiscordColor(r: 75, g: 80, b: 255));
             builder.WithFooter($"©2018 Lala Sabathil");
 
-            await ctx.Member.SendMessageAsync(embed: builder);
             await ctx.Message.DeleteAsync("command hide");
+            await ctx.Member.SendMessageAsync(null, false, builder);
         }
     }
 }

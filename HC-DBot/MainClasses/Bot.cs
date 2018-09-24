@@ -87,7 +87,7 @@ namespace HC_DBot.MainClasses
             {
                 MySqlCommand selectCmdSub = new MySqlCommand();
                 selectCmdSub.Connection = connection;
-                selectCmdSub.CommandText = $"SELECT * FROM modules.config WHERE guildId='{id}'";
+                selectCmdSub.CommandText = $"SELECT * FROM `modules.config` WHERE guildId='{id}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
                 if (read.Read())
                 {
@@ -156,7 +156,7 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = connection;
-                cmd.CommandText = $"INSERT INTO guilds.users (discordId, discordName, guildId, notes) "
+                cmd.CommandText = $"INSERT INTO `guilds.users` (discordId, discordName, guildId, notes) "
                                                  + $" values (?, ?, ?, 'auto add') "
                                                  + $" ON DUPLICATE KEY UPDATE discordId=discordId";
                 cmd.Parameters.Add("discordId", MySqlDbType.VarChar).Value = Convert.ToString(e.Member.Id);
@@ -182,7 +182,7 @@ namespace HC_DBot.MainClasses
                 connection.Open();
                 MySqlCommand selectCmd = new MySqlCommand();
                 selectCmd.Connection = connection;
-                selectCmd.CommandText = $"SELECT id FROM guilds WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
+                selectCmd.CommandText = $"SELECT id FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
                 MySqlDataReader reader = selectCmd.ExecuteReader();
                 if (reader.Read())
                 {
@@ -209,7 +209,7 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 MySqlCommand selectCmd = new MySqlCommand();
                 selectCmd.Connection = connection;
-                selectCmd.CommandText = $"SELECT * FROM guilds WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
+                selectCmd.CommandText = $"SELECT * FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
                 MySqlDataReader reader = selectCmd.ExecuteReader();
                 if (reader.Read())
                 {
@@ -239,7 +239,7 @@ namespace HC_DBot.MainClasses
                         await connection.OpenAsync();
                         MySqlCommand cmd = new MySqlCommand();
                         cmd.Connection = connection;
-                        cmd.CommandText = $"INSERT INTO guilds.users (discordId, discordName, guildId, notes) "
+                        cmd.CommandText = $"INSERT INTO `guilds.users` (discordId, discordName, guildId, notes) "
                                                          + $" values (?, ?, ?, 'auto add') "
                                                          + $" ON DUPLICATE KEY UPDATE discordId=discordId";
                         cmd.Parameters.Add("discordId", MySqlDbType.VarChar).Value = Convert.ToString(user.Id);

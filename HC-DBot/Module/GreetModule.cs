@@ -76,7 +76,7 @@ namespace HC_DBot.Module
                 await connection.OpenAsync();
                 MySqlCommand selectCmdSub = new MySqlCommand();
                 selectCmdSub.Connection = connection;
-                selectCmdSub.CommandText = $"SELECT greetModule FROM modules.config WHERE guildId='{guildId}'";
+                selectCmdSub.CommandText = $"SELECT `greetModule`* FROM modules.config WHERE guildId='{guildId}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
                 if (read.Read())
                 {

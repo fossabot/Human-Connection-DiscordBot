@@ -11,6 +11,8 @@ Developer Software: Visual Studio 2017
 
 .NET Core Version: 2.1
 
+NuGet Source: https://www.myget.org/F/dsharpplus-nightly/api/v3/index.json
+
 ## Status
 - [x] Rewrite User Commands
 

@@ -1,6 +1,6 @@
 ![Build Status](https://img.shields.io/badge/build-alpha-red.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/badges/shields.svg) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) 
 # Human Connection - HC Control - D#+ Rewrite
-<br/>
+# The actual commit does not work, bacause of changes to the database backend
 
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
 
@@ -12,8 +12,6 @@ Developer Software: Visual Studio 2017
 .NET Core Version: 2.1
 
 ## Status
-<span style="color: white; background-color: black;">
-
 - [x] Rewrite User Commands
 
 - [x] Rewrite Admin Commands
@@ -23,9 +21,6 @@ Developer Software: Visual Studio 2017
 - [ ] Adding extended features
 
 - [ ] Compiling working version for HC
-
-</span>
-
 
 ## Developer discord
 HC Discord. https://discord.gg/NgVpvx9

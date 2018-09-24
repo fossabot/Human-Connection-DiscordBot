@@ -1,0 +1,4 @@
+﻿ await e.Guild.GetChannel(hcDeChannelId).SendMessageAsync($"Herzlich willkommen {e.Member.Mention}\n" +
+                $"Du bist auf dem Discord von {e.Member.Username} gelandet \n\n" +
+                $"Schau bitte in {getInfoChannel(guild.Id).Mention} für weiter Informationen, wie du mithelfen kannst.\n" +
+                $"Um die Regeln ({getRulesChannel(guild.Id).Mention}) zu akzeptieren, schreibe bitte `$accept-rules` in einen Channel deiner Wahl um die Rolle _{e.Guild.GetRole(hcMemberGroupId).Name}_ zu bekommen.");

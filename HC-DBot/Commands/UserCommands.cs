@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
@@ -46,8 +47,9 @@ namespace HC_DBot.Commands
                 Console.WriteLine("Error: " + ey);
                 Console.WriteLine(ey.StackTrace);
             }
-            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, hcEmote));
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":ok_hand::skin-tone-2:"));
             await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(grantRoleId));
+            await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }
 
@@ -67,7 +69,7 @@ namespace HC_DBot.Commands
             builder.AddField("$info", "Info about the server - Not implemented");
             builder.AddField("$ping", "Returns a friendly \"Pong\"");
             builder.WithFooter($"©2018 Lala Sabathil");
-            builder.WithColor(new DiscordColor(r: 0, g: 0, b:255));
+            builder.WithColor(new DiscordColor(r: 0, g: 0, b: 255));
 
             if (ctx.Member.Roles.Any(x => x.CheckPermission(DSharpPlus.Permissions.Administrator) == DSharpPlus.PermissionLevel.Allowed))
             {
@@ -87,8 +89,10 @@ namespace HC_DBot.Commands
                 adminBuilder.WithFooter("HC Bot", "https://github.com/Lulalaby/Human-Connection-DiscordBot/");
                 adminBuilder.WithColor(new DiscordColor(r: 255, g: 20, b: 80));
                 var msg = await ctx.RespondAsync(embed: builder.Build());
+                await ctx.Message.DeleteAsync("command hide");
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("◀"));
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
+                await msg.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":x:"));
                 while (true)
                 {
                     var Inmsg = await invy.WaitForMessageReactionAsync(msg, ctx.User, TimeSpan.FromMinutes(1));
@@ -110,31 +114,27 @@ namespace HC_DBot.Commands
                     {
                         await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("▶"), ctx.User);
                     }
-                    else
+                    else if (Inmsg.Emoji == DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":x:"))
                     {
-                        await msg.ModifyAsync(embed: builder.Build());
                         await msg.DeleteAllReactionsAsync();
-                        break;
+                        await msg.ModifyAsync(embed: builder.Build());
+                        return;
                     }
                 }
-                return;
             }
             await ctx.RespondAsync(embed: builder.Build());
-            await ctx.Message.DeleteAsync("command hide");
         }
 
         [Command("author"), RequirePrefixes("$")]
         public async Task Author(CommandContext ctx)
         {
-            var lala = await ctx.Guild.GetMemberAsync(199858858166976513);
-            var getInvites = await ctx.Guild.GetInvitesAsync();
-            var Invite = getInvites.First(x => x.Code == "THZue3w");
+            var lala = await ctx.Client.GetUserAsync(199858858166976513);
             var builder = new DiscordEmbedBuilder();
             builder.WithTitle("Author contact data of HC Control");
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
             builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
             builder.WithDescription("The author of the HC Control is Lala Sabathil");
-            builder.AddField("Discord server", $"https://discord.gg/{Invite.Code}");
+            builder.AddField("Discord server", $"https://discord.gg/THZue3w");
             builder.AddField("Discord user", lala.Mention);
             builder.AddField("Facebook", "https://www.facebook.com/LalaDeviChan");
             builder.AddField("Twitter", "https://twitter.com/Lala_devi_chan");
@@ -145,7 +145,7 @@ namespace HC_DBot.Commands
             builder.WithFooter($"©2018 Lala Sabathil");
 
             await ctx.Message.DeleteAsync("command hide");
-            await ctx.Member.SendMessageAsync(null, false, builder);
+            await ctx.Message.RespondAsync(null, false, builder);
         }
     }
 }

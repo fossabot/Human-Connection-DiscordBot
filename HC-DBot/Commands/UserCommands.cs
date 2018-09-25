@@ -25,7 +25,7 @@ namespace HC_DBot.Commands
         public async Task RuleAccept(CommandContext ctx)
         {
             ulong grantRoleId = 0;
-            int guildId = GetGuildIdByUid(ctx.Guild.Id);
+            int guildId = await GetGuildIdByUid(ctx.Guild.Id);
 
             try
             {

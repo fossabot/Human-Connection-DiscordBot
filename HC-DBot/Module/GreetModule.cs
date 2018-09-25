@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using System.Data;
 
 namespace HC_DBot.Module
 {
@@ -17,7 +18,7 @@ namespace HC_DBot.Module
         public async Task GreetUser(GuildMemberAddEventArgs eventArgs)
         {
             DiscordGuild guild = eventArgs.Guild;
-            int guildId = GetGuildIdByUid(guild.Id);
+            int guildId = await GetGuildIdByUid(guild.Id);
             if (await ModuleCheck(guildId))
             {
                 Console.WriteLine($"Module 'Greet' is enabled on {eventArgs.Guild.Name}");
@@ -35,17 +36,23 @@ namespace HC_DBot.Module
                     await connection.OpenAsync();
                     MySqlCommand selectCmdSub = new MySqlCommand();
                     selectCmdSub.Connection = connection;
-                    selectCmdSub.CommandText = $"SELECT * FROM guilds.config WHERE guildId='{guildId}'";
-                    MySqlDataReader read = selectCmdSub.ExecuteReader();
-                    if (read.Read())
+                    selectCmdSub.CommandText = $"SELECT * FROM guilds.config WHERE guildId='{guildId}' LIMIT 1";
+                    MySqlDataReader reader = selectCmdSub.ExecuteReader();
+                    using (reader)
                     {
-                        infoChannel = Convert.ToUInt64(read["infoChannelId"]);
-                        ruleChannel = Convert.ToUInt64(read["ruleChannelId"]);
-                        cmdChannel = Convert.ToUInt64(read["cmdChannelId"]);
-                        customInfo = read["customInfo"].ToString();
-                        role = Convert.ToUInt64(read["roleId"]);
+                        DataTable dt = new DataTable();
+                        dt.Load(reader);
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            infoChannel = Convert.ToUInt64(reader["infoChannelId"]);
+                            ruleChannel = Convert.ToUInt64(reader["ruleChannelId"]);
+                            cmdChannel = Convert.ToUInt64(reader["cmdChannelId"]);
+                            customInfo = reader["customInfo"].ToString();
+                            role = Convert.ToUInt64(reader["roleId"]);
+                        }
                     }
-                    read.Close();
+                    reader.Close();
                     await connection.CloseAsync();
                 }
                 catch (Exception ey)
@@ -78,11 +85,17 @@ namespace HC_DBot.Module
                 selectCmdSub.Connection = connection;
                 selectCmdSub.CommandText = $"SELECT `greetModule`* FROM modules.config WHERE guildId='{guildId}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
-                if (read.Read())
+                using (read)
                 {
-                    enabled = Convert.ToBoolean(read[0]);
+                    DataTable dta = new DataTable();
+                    dta.Load(read);
+
+                    foreach (DataRow rows in dta.Rows)
+                    {
+                        enabled = Convert.ToBoolean(read[0]);
+                    }
+                    read.Close();
                 }
-                read.Close();
                 await connection.CloseAsync();
             }
             catch (Exception ey)

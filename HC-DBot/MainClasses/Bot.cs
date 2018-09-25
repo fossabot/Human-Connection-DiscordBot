@@ -33,7 +33,8 @@ namespace HC_DBot.MainClasses
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 LogLevel = LogLevel.Debug,
-                UseInternalLogHandler = true
+                UseInternalLogHandler = true,
+                HttpTimeout = Timeout.InfiniteTimeSpan
             };
             Client = new DiscordClient(cfg);
             Client.GuildMemberAdded += GuildMemberAddActions;
@@ -71,6 +72,7 @@ namespace HC_DBot.MainClasses
                         Console.WriteLine($"Guild: {serverName} | Config: {serverConfig}");
                     }
                 }
+                reader.Close();
                 connection.Close();
             }
             catch (Exception ey)
@@ -89,11 +91,17 @@ namespace HC_DBot.MainClasses
                 selectCmdSub.Connection = connection;
                 selectCmdSub.CommandText = $"SELECT * FROM `modules.config` WHERE guildId='{id}'";
                 MySqlDataReader read = selectCmdSub.ExecuteReader();
-                if (read.Read())
+                using (read)
                 {
-                    serverConfigString = $"Admin: {Convert.ToString(read["adminModule"])} | Greet: {Convert.ToString(read["greetModule"])} | Birthday: {Convert.ToString(read["birthdayModule"])}";
+                    DataTable dta = new DataTable();
+                    dta.Load(read);
+
+                    foreach (DataRow rows in dta.Rows)
+                    {
+                        serverConfigString = $"Admin: {Convert.ToString(rows["adminModule"])} | Greet: {Convert.ToString(rows["greetModule"])} | Birthday: {Convert.ToString(rows["birthdayModule"])}";
+                    }
+                    read.Close();
                 }
-                read.Close();
             }
             catch (Exception ey)
             {
@@ -106,8 +114,8 @@ namespace HC_DBot.MainClasses
 
         public async Task GuildMemberAddActions(GuildMemberAddEventArgs e)
         {
-            await AddJoinUser(e);
             await JoinMSG(e);
+            await AddJoinUser(e);
         }
 
         public async Task ReactorModulAdd(MessageReactionAddEventArgs e)
@@ -173,13 +181,13 @@ namespace HC_DBot.MainClasses
             Console.WriteLine("UserAdd done!");
         }
 
-        public static int GetGuildIdByUid(ulong id)
+        public static async Task<int> GetGuildIdByUid(ulong id)
         {
             int guildInt = 0;
 
             try
             {
-                connection.Open();
+                await connection.OpenAsync();
                 MySqlCommand selectCmd = new MySqlCommand();
                 selectCmd.Connection = connection;
                 selectCmd.CommandText = $"SELECT id FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
@@ -188,8 +196,8 @@ namespace HC_DBot.MainClasses
                 {
                     guildInt = Convert.ToInt16(reader["id"]);
                 }
-                connection.Close();
                 reader.Close();
+                await connection.CloseAsync();
             }
             catch (Exception ey)
             {
@@ -211,11 +219,17 @@ namespace HC_DBot.MainClasses
                 selectCmd.Connection = connection;
                 selectCmd.CommandText = $"SELECT * FROM `guilds` WHERE guildId='{Convert.ToString(id)}' LIMIT 1";
                 MySqlDataReader reader = selectCmd.ExecuteReader();
-                if (reader.Read())
+                using (reader)
                 {
-                    guildName = Convert.ToString(reader["server"]);
+                    DataTable dta = new DataTable();
+                    dta.Load(reader);
+
+                    foreach (DataRow rows in dta.Rows)
+                    {
+                        guildName = Convert.ToString(reader["server"]);
+                    }
+                    reader.Close();
                 }
-                reader.Close();
                 await connection.CloseAsync();
             }
             catch (Exception ey)
@@ -231,7 +245,7 @@ namespace HC_DBot.MainClasses
         {
             foreach (var guild in e.Guilds)
             {
-                var guildId = GetGuildIdByUid(guild.Value.Id);
+                var guildId = await GetGuildIdByUid(guild.Value.Id);
                 foreach (var user in guild.Value.Members)
                 {
                     try

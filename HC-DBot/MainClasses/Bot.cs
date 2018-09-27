@@ -35,7 +35,7 @@ namespace HC_DBot.MainClasses
             Client = new DiscordClient(cfg);
             Client.GuildDownloadCompleted += BotGuildsDownloaded;
             Client.GuildMemberAdded += MemberAdd;
-           //Client.MessageReactionAdded += ReactAdd;
+            //Client.MessageReactionAdded += ReactAdd;
             //Client.MessageReactionRemoved += ReactRemove;
             CNext = Client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { "$", "!" },
@@ -104,12 +104,15 @@ namespace HC_DBot.MainClasses
                     {
                         foreach (var user in BDayPPL)
                         {
-                            var Guild = await Client.GetGuildAsync(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildID);
-                            var DM = await Guild.GetMemberAsync(user);
-                            GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user).BdaySent = true;
-                            var resetTrigger = ResetBday(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user));
-                            resetTrigger.Wait(1000);
-                            await DM.SendMessageAsync("Congrats!");
+                            if (GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].ModuleConfig.BirthdayModule)
+                            {
+                                var Guild = await Client.GetGuildAsync(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildID);
+                                var DM = await Guild.GetMemberAsync(user);
+                                GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user).BdaySent = true;
+                                var resetTrigger = ResetBday(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user));
+                                resetTrigger.Wait(1000);
+                                await DM.SendMessageAsync("Congrats!");
+                            }
                         }
                     }
                 }
@@ -375,8 +378,7 @@ namespace HC_DBot.MainClasses
             }
         }
 
-        /*
-        public async Task ReactAdd(MessageReactionAddEventArgs e)
+        /*public async Task ReactAdd(MessageReactionAddEventArgs e)
         {
             if (e.Message.Id == rolemsg && e.Emoji.Id == hcRoleEmote)
             {
@@ -392,8 +394,7 @@ namespace HC_DBot.MainClasses
                 var GMember = await e.Channel.Guild.GetMemberAsync(e.User.Id);
                 await GMember.RevokeRoleAsync(e.Channel.Guild.GetRole(testGroup), "Role react");
             }
-        }
-        */
+        }*/
     }
 
     public class Guilds

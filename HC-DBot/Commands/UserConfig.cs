@@ -10,20 +10,19 @@ namespace HC_DBot.Commands
     [Group("config")]
     class UserConfig : BaseCommandModule
     {
-
         [Command("set-birthday"), Description("Set your birthday!\nPlease use this format: MM-DD-YYYY\n__Example:__ $config birthday 03-24-1994")]
         public async Task SetBDay(CommandContext ctx,[Description("Please use this format: MM-DD-YYYY\n__Example:__ $config birthday 03-24-1994")] DateTime date)
         {
             try
             {
-                /*await connection.OpenAsync();
+                await connection.OpenAsync();
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = connection;
-                cmd.CommandText = $"UPDATE `DiscordUsers` SET Birthdate = ? WHERE DiscordId = {Convert.ToUInt64(ctx.User.Id)}";
+                cmd.CommandText = $"UPDATE `guilds.users` SET `Birthdate` = ? WHERE `guilds.users`.`userID` = {ctx.User.Id}";
                 cmd.Parameters.Add("Birthdate", MySqlDbType.Date).Value = date.Date;
                 await cmd.ExecuteNonQueryAsync();
                 await ctx.RespondAsync($"Set your birthday to: {date.Date.ToShortDateString()}");
-                await connection.CloseAsync();*/
+                await connection.CloseAsync();
             }
             catch (Exception ex)
             {

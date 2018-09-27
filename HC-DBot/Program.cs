@@ -26,12 +26,5 @@ namespace HC_DBot
     {
         public string Token { get; set; }
         public string MysqlCon { get; set; }
-        public Modules Modules { get; set; }
-    }
-    public class Modules
-    {
-        public bool Admin { get; set; }
-        public bool Role { get; set; }
-        public bool Greet { get; set; }
     }
 }

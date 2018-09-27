@@ -25,30 +25,8 @@ namespace HC_DBot.Commands
         [Command("accept-rules"), RequirePrefixes("$")]
         public async Task RuleAccept(CommandContext ctx)
         {
-            ulong grantRoleId = 0;
-            int guildId = await GetGuildIdByUid(ctx.Guild.Id);
-
-            try
-            {
-                await connection.OpenAsync();
-                MySqlCommand selectCmdSub = new MySqlCommand();
-                selectCmdSub.Connection = connection;
-                selectCmdSub.CommandText = $"SELECT roleId FROM `guilds.config` WHERE guildId='{guildId}'";
-                MySqlDataReader read = selectCmdSub.ExecuteReader();
-                if (read.Read())
-                {
-                    grantRoleId = Convert.ToUInt64(read[0]);
-                }
-                read.Close();
-                await connection.CloseAsync();
-            }
-            catch (Exception ey)
-            {
-                Console.WriteLine("Error: " + ey);
-                Console.WriteLine(ey.StackTrace);
-            }
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":ok_hand::skin-tone-2:"));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(grantRoleId));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.roleID));
             await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }
@@ -71,7 +49,7 @@ namespace HC_DBot.Commands
             builder.WithFooter($"©2018 Lala Sabathil");
             builder.WithColor(new DiscordColor(r: 0, g: 0, b: 255));
 
-            if (ctx.Member.Roles.Any(x => x.CheckPermission(DSharpPlus.Permissions.Administrator) == DSharpPlus.PermissionLevel.Allowed))
+            if (ctx.Member.Roles.Any(x => x.CheckPermission(Permissions.Administrator) == PermissionLevel.Allowed))
             {
                 var adminBuilder = new DiscordEmbedBuilder();
                 adminBuilder.WithAuthor($"©2018 Lala Sabathil");

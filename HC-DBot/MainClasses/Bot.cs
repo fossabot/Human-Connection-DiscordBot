@@ -4,7 +4,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 using System;
-using static HC_DBot.GuildStatics;
 using System.Threading;
 using MySql.Data.MySqlClient;
 using System.Linq;
@@ -19,6 +18,7 @@ namespace HC_DBot.MainClasses
         private InteractivityExtension INext;
         public static MySqlConnection connection;
         public static List<Guilds> GuildsList = new List<Guilds>();
+        public static CancellationTokenSource ShutdownRequest;
 
         public Bot(string Token, string mysqlCon)
         {
@@ -35,8 +35,8 @@ namespace HC_DBot.MainClasses
             Client = new DiscordClient(cfg);
             Client.GuildDownloadCompleted += BotGuildsDownloaded;
             Client.GuildMemberAdded += MemberAdd;
-            Client.MessageReactionAdded += ReactAdd;
-            Client.MessageReactionRemoved += ReactRemove;
+           //Client.MessageReactionAdded += ReactAdd;
+            //Client.MessageReactionRemoved += ReactRemove;
             CNext = Client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { "$", "!" },
                 EnableDefaultHelp = false
@@ -184,11 +184,11 @@ namespace HC_DBot.MainClasses
                     {
                         GuildsList[pos].ChannelConfig = (new ChannelConfig
                         {
-                            ruleChannelID = Convert.ToUInt64(reader["ruleChannelID"]),
-                            infoChannelID = Convert.ToUInt64(reader["infoChannelID"]),
-                            cmdChannelID = Convert.ToUInt64(reader["cmdChannelID"]),
-                            roleID = Convert.ToUInt64(reader["roleID"]),
-                            customInfo = reader["customInfo"].ToString()
+                            RuleChannelID = Convert.ToUInt64(reader["ruleChannelID"]),
+                            InfoChannelID = Convert.ToUInt64(reader["infoChannelID"]),
+                            CmdChannelID = Convert.ToUInt64(reader["cmdChannelID"]),
+                            RoleID = Convert.ToUInt64(reader["roleID"]),
+                            CustomInfo = reader["customInfo"].ToString()
                         });
                     }
                     await connection.CloseAsync();
@@ -225,9 +225,9 @@ namespace HC_DBot.MainClasses
                     {
                         GuildsList[pos].ModuleConfig = new ModuleConfig
                         {
-                            adminModule = Convert.ToBoolean(reader["adminModule"]),
-                            greetModule = Convert.ToBoolean(reader["greetModule"]),
-                            birthdayModule = Convert.ToBoolean(reader["birthdayModule"])
+                            AdminModule = Convert.ToBoolean(reader["adminModule"]),
+                            GreetModule = Convert.ToBoolean(reader["greetModule"]),
+                            BirthdayModule = Convert.ToBoolean(reader["birthdayModule"])
                         };
                     }
                     await connection.CloseAsync();
@@ -248,7 +248,7 @@ namespace HC_DBot.MainClasses
                     {
                         GuildsList[pos].ModuleConfig.GreetMessages.Add(new GreetMessages
                         {
-                            announceString = reader["announceString"].ToString()
+                            AnnounceString = reader["announceString"].ToString()
                         });
                     }
                     await connection.CloseAsync();
@@ -364,17 +364,18 @@ namespace HC_DBot.MainClasses
         {
             int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
             if (pos == -1) return;
-            if (GuildsList[pos].ModuleConfig.greetModule)
+            if (GuildsList[pos].ModuleConfig.GreetModule)
             {
                 await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
                 $"You succesfully landed on {e.Guild.Name} \n\n" +
-                $"Please take a look into {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.infoChannelID).Mention} for informations regarding this server.\n" +
-                $"To accept the rules ({e.Guild.GetChannel(GuildsList[pos].ChannelConfig.ruleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.cmdChannelID).Mention}.\n" +
-                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[pos].ChannelConfig.roleID).Name}*.\n\n" +
-                $"{GuildsList[pos].ChannelConfig.customInfo}");
+                $"Please take a look into {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+                $"To accept the rules ({e.Guild.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
+                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
+                $"{GuildsList[pos].ChannelConfig.CustomInfo}");
             }
         }
 
+        /*
         public async Task ReactAdd(MessageReactionAddEventArgs e)
         {
             if (e.Message.Id == rolemsg && e.Emoji.Id == hcRoleEmote)
@@ -392,6 +393,7 @@ namespace HC_DBot.MainClasses
                 await GMember.RevokeRoleAsync(e.Channel.Guild.GetRole(testGroup), "Role react");
             }
         }
+        */
     }
 
     public class Guilds
@@ -415,23 +417,23 @@ namespace HC_DBot.MainClasses
 
     public class ChannelConfig
     {
-        public ulong ruleChannelID { get; set; }
-        public ulong infoChannelID { get; set; }
-        public ulong cmdChannelID { get; set; }
-        public ulong roleID { get; set; }
-        public string customInfo { get; set; }
+        public ulong RuleChannelID { get; set; }
+        public ulong InfoChannelID { get; set; }
+        public ulong CmdChannelID { get; set; }
+        public ulong RoleID { get; set; }
+        public string CustomInfo { get; set; }
     }
 
     public class ModuleConfig
     {
-        public bool adminModule { get; set; }
-        public bool greetModule { get; set; }
-        public bool birthdayModule { get; set; }
+        public bool AdminModule { get; set; }
+        public bool GreetModule { get; set; }
+        public bool BirthdayModule { get; set; }
         public List<GreetMessages> GreetMessages { get; set; }
     }
 
     public class GreetMessages
     {
-        public string announceString { get; set; }
+        public string AnnounceString { get; set; }
     }
 }

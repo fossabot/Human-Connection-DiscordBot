@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Linq;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using MySql.Data.MySqlClient;
 using static HC_DBot.MainClasses.Bot;
+using DSharpPlus.Entities;
 
 namespace HC_DBot.Commands
 {
@@ -22,6 +24,35 @@ namespace HC_DBot.Commands
                 cmd.Parameters.Add("Birthdate", MySqlDbType.Date).Value = date.Date;
                 await cmd.ExecuteNonQueryAsync();
                 await ctx.RespondAsync($"Set your birthday to: {date.Date.ToShortDateString()}");
+                await connection.CloseAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+        }
+
+        [Command("get-birthday"), Description("Get birthday of specific user!")]
+        public async Task SetBDay(CommandContext ctx, DiscordUser user)
+        {
+            try
+            {
+                await connection.OpenAsync();
+
+                MySqlCommand cmd = new MySqlCommand();
+
+                cmd.Connection = connection;
+                cmd.CommandText = $"SELECT * FROM `guilds.users` WHERE `guilds.users`.`userID` = {user.Id} LIMIT 1";
+
+                var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    await ctx.RespondAsync($"Birthday of {user.Mention}: {Convert.ToDateTime(reader["Birthdate"]).Date.ToShortDateString()}");
+                }
+
+
                 await connection.CloseAsync();
             }
             catch (Exception ex)

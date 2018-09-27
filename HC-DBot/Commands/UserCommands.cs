@@ -5,11 +5,8 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static HC_DBot.GuildStatics;
 using static HC_DBot.MainClasses.Bot;
 
 namespace HC_DBot.Commands
@@ -26,7 +23,7 @@ namespace HC_DBot.Commands
         public async Task RuleAccept(CommandContext ctx)
         {
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":ok_hand::skin-tone-2:"));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.roleID));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.RoleID));
             await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }
@@ -123,7 +120,7 @@ namespace HC_DBot.Commands
             builder.WithFooter($"©2018 Lala Sabathil");
 
             await ctx.Message.DeleteAsync("command hide");
-            await ctx.Message.RespondAsync(null, false, builder);
+            await ctx.Message.RespondAsync(embed: builder.Build());
         }
     }
 }

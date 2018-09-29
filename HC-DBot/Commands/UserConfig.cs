@@ -31,8 +31,6 @@ namespace HC_DBot.Commands
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
             }
-
-            await Task.Delay(1);
         }
 
         [Command("get-birthday"), Description("Get birthday of specific user!")]
@@ -41,20 +39,14 @@ namespace HC_DBot.Commands
             try
             {
                 await connection.OpenAsync();
-
                 MySqlCommand cmd = new MySqlCommand();
-
                 cmd.Connection = connection;
                 cmd.CommandText = $"SELECT * FROM `guilds.users` WHERE `guilds.users`.`userID` = {user.Id} LIMIT 1";
-
                 var reader = await cmd.ExecuteReaderAsync();
-
                 while (await reader.ReadAsync())
                 {
                     await ctx.RespondAsync($"Birthday of {user.Mention}: {Convert.ToDateTime(reader["Birthdate"]).Date.ToShortDateString()}");
                 }
-
-
                 await connection.CloseAsync();
             }
             catch (Exception ex)
@@ -62,8 +54,6 @@ namespace HC_DBot.Commands
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
             }
-
-            await Task.Delay(1);
         }
     }
 }

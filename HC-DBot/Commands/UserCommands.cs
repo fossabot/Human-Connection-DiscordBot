@@ -13,17 +13,20 @@ namespace HC_DBot.Commands
 {
     class UserCommands : BaseCommandModule
     {
+<<<<<<< HEAD
         [Command("ping"), RequirePrefixes("$")]
         public async Task Ping(CommandContext ctx)
         {
             await ctx.RespondAsync($"{ctx.Member.Mention}, Pong! :3 miau!");
         }
 
+=======
+>>>>>>> c53abf9b9018a672eebc49ede68e209a7e8944d1
         [Command("accept-rules"), RequirePrefixes("$")]
         public async Task RuleAccept(CommandContext ctx)
         {
-            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":ok_hand::skin-tone-2:"));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.RoleID));
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":ok_hand::skin-tone-2:"));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.ChannelConfig.RoleID));
             await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }
@@ -61,13 +64,13 @@ namespace HC_DBot.Commands
                 adminBuilder.AddField("!role-remove <usermention> <rolename>", "Remove *user* from *role*");
                 adminBuilder.AddField("!shutdown", "Stop's the bot and exits the application on bot side");
                 adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
-                adminBuilder.WithFooter("HC Bot", "https://github.com/Lulalaby/Human-Connection-DiscordBot/");
+                adminBuilder.WithFooter("HC Bot", "[Github Source](https://github.com/Lulalaby/Human-Connection-DiscordBot/)");
                 adminBuilder.WithColor(new DiscordColor(r: 255, g: 20, b: 80));
                 var msg = await ctx.RespondAsync(embed: builder.Build());
                 await ctx.Message.DeleteAsync("command hide");
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("◀"));
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
-                await msg.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":x:"));
+                await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
                 while (true)
                 {
                     var Inmsg = await invy.WaitForMessageReactionAsync(msg, ctx.User, TimeSpan.FromMinutes(1));
@@ -89,7 +92,7 @@ namespace HC_DBot.Commands
                     {
                         await msg.DeleteReactionAsync(DiscordEmoji.FromUnicode("▶"), ctx.User);
                     }
-                    else if (Inmsg.Emoji == DiscordEmoji.FromName(ctx.Client as BaseDiscordClient, ":x:"))
+                    else if (Inmsg.Emoji == DiscordEmoji.FromUnicode("❌"))
                     {
                         await msg.DeleteAllReactionsAsync();
                         await msg.ModifyAsync(embed: builder.Build());
@@ -109,16 +112,15 @@ namespace HC_DBot.Commands
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
             builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
             builder.WithDescription("The author of the HC Control is Lala Sabathil");
-            builder.AddField("Discord server", $"https://discord.gg/THZue3w");
+            builder.AddField("Discord server", $"[Invite Link](https://discord.gg/THZue3w)");
             builder.AddField("Discord user", lala.Mention);
-            builder.AddField("Facebook", "https://www.facebook.com/LalaDeviChan");
-            builder.AddField("Twitter", "https://twitter.com/Lala_devi_chan");
-            builder.AddField("Mail", "admin@latias.eu");
-            builder.AddField("Telegram", "https://telegram.me/Lulalaby");
+            builder.AddField("Facebook", "[Profile Link](https://www.facebook.com/LalaDeviChan)");
+            builder.AddField("Twitter", "[Profile Link](https://twitter.com/Lala_devi_chan)");
+            builder.AddField("Mail", "[Mail](mailto:admin@latias.eu");
+            builder.AddField("Telegram", "[Link](https://telegram.me/Lulalaby)");
             builder.WithUrl("https://www.latias.eu");
             builder.WithColor(new DiscordColor(r: 75, g: 80, b: 255));
             builder.WithFooter($"©2018 Lala Sabathil");
-
             await ctx.Message.DeleteAsync("command hide");
             await ctx.Message.RespondAsync(embed: builder.Build());
         }

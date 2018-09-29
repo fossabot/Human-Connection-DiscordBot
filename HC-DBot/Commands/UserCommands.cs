@@ -13,15 +13,12 @@ namespace HC_DBot.Commands
 {
     class UserCommands : BaseCommandModule
     {
-<<<<<<< HEAD
         [Command("ping"), RequirePrefixes("$")]
         public async Task Ping(CommandContext ctx)
         {
             await ctx.RespondAsync($"{ctx.Member.Mention}, Pong! :3 miau!");
         }
 
-=======
->>>>>>> c53abf9b9018a672eebc49ede68e209a7e8944d1
         [Command("accept-rules"), RequirePrefixes("$")]
         public async Task RuleAccept(CommandContext ctx)
         {
@@ -36,9 +33,8 @@ namespace HC_DBot.Commands
         {
             var invy = ctx.Client.GetInteractivity();
             var builder = new DiscordEmbedBuilder();
-            builder.WithTitle("Commands of HC Control");
+            builder.WithTitle("Commands of HC Control - Not all are implemented right now");
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
-            builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
             builder.WithDescription($"This are the commands for the **HC Control**. The prefix is **$**");
             builder.AddField("$accept-rules", "Accept the rules of this server");
             builder.AddField("$author", "Information about the author");
@@ -52,10 +48,8 @@ namespace HC_DBot.Commands
             if (ctx.Member.Roles.Any(x => x.CheckPermission(Permissions.Administrator) == PermissionLevel.Allowed))
             {
                 var adminBuilder = new DiscordEmbedBuilder();
-                adminBuilder.WithAuthor($"©2018 Lala Sabathil");
-                adminBuilder.WithTitle("Admin commands of HC Control - Not implemented right now");
+                adminBuilder.WithTitle("Admin commands of HC Control - Not all are implemented right now");
                 adminBuilder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
-                adminBuilder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
                 adminBuilder.WithDescription($"This are the admin commands for the **HC Control**.\nSince you have Administrator Privilege, you get this message.\nAdmin prefix is **!**");
                 adminBuilder.AddField("!ban <usermention> <reason>", "Ban the mentioned *user* with *reason*");
                 adminBuilder.AddField("!info", "Info about the server for admins");
@@ -64,10 +58,10 @@ namespace HC_DBot.Commands
                 adminBuilder.AddField("!role-remove <usermention> <rolename>", "Remove *user* from *role*");
                 adminBuilder.AddField("!shutdown", "Stop's the bot and exits the application on bot side");
                 adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
-                adminBuilder.WithFooter("HC Bot", "[Github Source](https://github.com/Lulalaby/Human-Connection-DiscordBot/)");
+                builder.WithFooter($"©2018 Lala Sabathil");
                 adminBuilder.WithColor(new DiscordColor(r: 255, g: 20, b: 80));
-                var msg = await ctx.RespondAsync(embed: builder.Build());
                 await ctx.Message.DeleteAsync("command hide");
+                var msg = await ctx.RespondAsync(embed: builder.Build());
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("◀"));
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
@@ -116,7 +110,7 @@ namespace HC_DBot.Commands
             builder.AddField("Discord user", lala.Mention);
             builder.AddField("Facebook", "[Profile Link](https://www.facebook.com/LalaDeviChan)");
             builder.AddField("Twitter", "[Profile Link](https://twitter.com/Lala_devi_chan)");
-            builder.AddField("Mail", "[Mail](mailto:admin@latias.eu");
+            builder.AddField("Mail", "admin@latias.eu");
             builder.AddField("Telegram", "[Link](https://telegram.me/Lulalaby)");
             builder.WithUrl("https://www.latias.eu");
             builder.WithColor(new DiscordColor(r: 75, g: 80, b: 255));

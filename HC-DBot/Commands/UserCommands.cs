@@ -16,7 +16,7 @@ namespace HC_DBot.Commands
         [Command("ping"), RequirePrefixes("$")]
         public async Task Ping(CommandContext ctx)
         {
-            await ctx.RespondAsync($"{ctx.Member.Mention}, Pong! :3 miau");
+            await ctx.RespondAsync($"{ctx.Member.Mention}, Pong! :3 miau!");
         }
 
         [Command("accept-rules"), RequirePrefixes("$")]

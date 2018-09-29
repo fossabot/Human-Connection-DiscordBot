@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,7 +7,7 @@
     <StartupObject>HC_DBot.Program</StartupObject>
     <ApplicationIcon>hclogo.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Lala Sabathil;Speyd3r</Authors>
     <Company>Latias.eu IT</Company>

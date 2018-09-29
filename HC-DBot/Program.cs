@@ -10,7 +10,7 @@ namespace HC_DBot
 
         static void Main(string[] args)
         {
-            using (StreamReader r = new StreamReader("config.json"))
+            using (StreamReader r = new StreamReader("./config.json"))
             {
                 string json = r.ReadToEnd();
                 config = JsonConvert.DeserializeObject<Data>(json);

@@ -31,6 +31,8 @@ namespace HC_DBot.Commands
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
             }
+
+            await Task.Delay(1);
         }
 
         [Command("get-birthday"), Description("Get birthday of specific user!")]
@@ -60,6 +62,8 @@ namespace HC_DBot.Commands
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
             }
+
+            await Task.Delay(1);
         }
     }
 }

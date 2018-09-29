@@ -1,1 +1,0 @@
-﻿do we really need extra classes for like 50~ lines of code?

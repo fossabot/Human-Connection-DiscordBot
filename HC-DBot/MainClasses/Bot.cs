@@ -17,7 +17,7 @@ namespace HC_DBot.MainClasses
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
         public static MySqlConnection connection;
-        public static List<Guilds> GuildsList = new List<Guilds>();
+        public static Guilds GuildsList = new Guilds();
         public static CancellationTokenSource ShutdownRequest;
 
         public Bot(string Token, string mysqlCon)
@@ -104,12 +104,12 @@ namespace HC_DBot.MainClasses
                     {
                         foreach (var user in BDayPPL)
                         {
-                            if (GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].ModuleConfig.BirthdayModule)
+                            if (GuildsList.ModuleConfig.BirthdayModule)
                             {
-                                var Guild = await Client.GetGuildAsync(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildID);
+                                var Guild = await Client.GetGuildAsync(GuildsList.GuildID);
                                 var DM = await Guild.GetMemberAsync(user);
-                                GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user).BdaySent = true;
-                                var resetTrigger = ResetBday(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user));
+                                GuildsList.GuildMembers.Find(x => x.UserID == user).BdaySent = true;
+                                var resetTrigger = ResetBday(GuildsList.GuildMembers.Find(x => x.UserID == user));
                                 resetTrigger.Wait(1000);
                                 await DM.SendMessageAsync("Congrats!");
                             }
@@ -146,7 +146,7 @@ namespace HC_DBot.MainClasses
                     guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = guild.Value.Name;
                     guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = guild.Value.Owner.Id;
                     await guildcmd.ExecuteNonQueryAsync();
-                    GuildsList.Add(new Guilds
+                    GuildsList = new Guilds
                     {
                         GuildID = guild.Value.Id,
                         GuildName = guild.Value.Name,
@@ -155,14 +155,13 @@ namespace HC_DBot.MainClasses
                         GuildMembers = new List<Members>(),
                         ChannelConfig = new ChannelConfig(),
                         ModuleConfig = new ModuleConfig()
-                    });
+                    };
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
                 } //Guild Top
-                int pos = GuildsList.FindIndex(x => x.GuildID == guild.Value.Id);
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
@@ -185,7 +184,7 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ChannelConfig = (new ChannelConfig
+                        GuildsList.ChannelConfig = (new ChannelConfig
                         {
                             RuleChannelID = Convert.ToUInt64(reader["ruleChannelID"]),
                             InfoChannelID = Convert.ToUInt64(reader["infoChannelID"]),
@@ -226,7 +225,7 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ModuleConfig = new ModuleConfig
+                        GuildsList.ModuleConfig = new ModuleConfig
                         {
                             AdminModule = Convert.ToBoolean(reader["adminModule"]),
                             GreetModule = Convert.ToBoolean(reader["greetModule"]),
@@ -249,7 +248,7 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ModuleConfig.GreetMessages.Add(new GreetMessages
+                        GuildsList.ModuleConfig.GreetMessages.Add(new GreetMessages
                         {
                             AnnounceString = reader["announceString"].ToString()
                         });
@@ -315,7 +314,7 @@ namespace HC_DBot.MainClasses
                         cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
                         cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
                         await cmd.ExecuteNonQueryAsync();
-                        GuildsList[pos].GuildMembers.Add(new Members
+                        GuildsList.GuildMembers.Add(new Members
                         {
                             UserID = user.Id,
                             UserName = user.Username,
@@ -346,8 +345,7 @@ namespace HC_DBot.MainClasses
                 cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = e.Member.Username;
                 cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = e.Member.Discriminator;
                 await cmd.ExecuteNonQueryAsync();
-                int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
-                GuildsList[pos].GuildMembers.Add(new Members
+                GuildsList.GuildMembers.Add(new Members
                 {
                     UserID = e.Member.Id,
                     UserName = e.Member.Username,
@@ -365,16 +363,14 @@ namespace HC_DBot.MainClasses
 
         public async Task GreetUser(GuildMemberAddEventArgs e)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
-            if (pos == -1) return;
-            if (GuildsList[pos].ModuleConfig.GreetModule)
+            if (GuildsList.ModuleConfig.GreetModule)
             {
                 await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
                 $"You succesfully landed on {e.Guild.Name} \n\n" +
-                $"Please take a look into {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
-                $"To accept the rules ({e.Guild.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
-                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
-                $"{GuildsList[pos].ChannelConfig.CustomInfo}");
+                $"Please take a look into {e.Guild.GetChannel(GuildsList.ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+                $"To accept the rules ({e.Guild.GetChannel(GuildsList.ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList.ChannelConfig.CmdChannelID).Mention}.\n" +
+                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList.ChannelConfig.RoleID).Name}*.\n\n" +
+                $"{GuildsList.ChannelConfig.CustomInfo}");
             }
         }
 

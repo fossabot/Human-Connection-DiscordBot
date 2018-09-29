@@ -39,26 +39,23 @@ namespace HC_DBot.Commands
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task WelcomeMessage(CommandContext ctx)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            if (!GuildsList[pos].ModuleConfig.GreetModule)
+            if (!GuildsList.ModuleConfig.GreetModule)
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **enabled!**");
-                GuildsList[pos].ModuleConfig.GreetModule = true;
-
+                GuildsList.ModuleConfig.GreetModule = true;
             }
             else
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Welcome messages have been **disabled!**");
-                GuildsList[pos].ModuleConfig.GreetModule = false;
+                GuildsList.ModuleConfig.GreetModule = false;
             }
-            var msqlCon = new MySqlConnection(HC_DBot.Program.config.MysqlCon);
+            var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
             {
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `greetModule` = '{Convert.ToInt16(GuildsList[pos].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                cmd.CommandText = $"UPDATE `modules.config` SET `greetModule` = '{Convert.ToInt16(GuildsList.ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -72,26 +69,23 @@ namespace HC_DBot.Commands
         [Command("bdaytoggle"), Aliases("bdt"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task BDayMessage(CommandContext ctx)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            if (!GuildsList[pos].ModuleConfig.BirthdayModule)
+            if (!GuildsList.ModuleConfig.BirthdayModule)
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Birthday messages have been **enabled!**");
-                GuildsList[pos].ModuleConfig.BirthdayModule = true;
-
+                GuildsList.ModuleConfig.BirthdayModule = true;
             }
             else
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Birthday messages have been **disabled!**");
-                GuildsList[pos].ModuleConfig.BirthdayModule = false;
+                GuildsList.ModuleConfig.BirthdayModule = false;
             }
-            var msqlCon = new MySqlConnection(HC_DBot.Program.config.MysqlCon);
+            var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
             {
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `birthdayModule` = '{Convert.ToInt16(GuildsList[pos].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                cmd.CommandText = $"UPDATE `modules.config` SET `birthdayModule` = '{Convert.ToInt16(GuildsList.ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -105,18 +99,15 @@ namespace HC_DBot.Commands
         [Command("admintoggle"), Aliases("admint"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task AdminModuleToggle(CommandContext ctx)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            if (!GuildsList[pos].ModuleConfig.AdminModule)
+            if (!GuildsList.ModuleConfig.AdminModule)
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Admin Module has been **enabled!**");
-                GuildsList[pos].ModuleConfig.AdminModule = true;
-
+                GuildsList.ModuleConfig.AdminModule = true;
             }
             else
             {
                 await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Admin Module has been **disabled!**");
-                GuildsList[pos].ModuleConfig.AdminModule = false;
+                GuildsList.ModuleConfig.AdminModule = false;
             }
             var msqlCon = new MySqlConnection(HC_DBot.Program.config.MysqlCon);
             await msqlCon.OpenAsync();
@@ -124,7 +115,7 @@ namespace HC_DBot.Commands
             {
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `adminModule` = '{Convert.ToInt16(GuildsList[pos].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                cmd.CommandText = $"UPDATE `modules.config` SET `adminModule` = '{Convert.ToInt16(GuildsList.ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -138,9 +129,7 @@ namespace HC_DBot.Commands
         [Command("rulechannel"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task RuleChanChange(CommandContext ctx, DiscordChannel channel)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            GuildsList[pos].ChannelConfig.RuleChannelID = channel.Id;
+            GuildsList.ChannelConfig.RuleChannelID = channel.Id;
             var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
@@ -162,9 +151,7 @@ namespace HC_DBot.Commands
         [Command("infochannel"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task InfoChanChange(CommandContext ctx, DiscordChannel channel)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            GuildsList[pos].ChannelConfig.RuleChannelID = channel.Id;
+            GuildsList.ChannelConfig.RuleChannelID = channel.Id;
             var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
@@ -186,9 +173,7 @@ namespace HC_DBot.Commands
         [Command("cmdchannel"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task CmdChanChange(CommandContext ctx, DiscordChannel channel)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            GuildsList[pos].ChannelConfig.RuleChannelID = channel.Id;
+            GuildsList.ChannelConfig.RuleChannelID = channel.Id;
             var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
@@ -210,9 +195,7 @@ namespace HC_DBot.Commands
         [Command("rolechange"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator), Priority(2)]
         public async Task RoleChange(CommandContext ctx, DiscordRole role)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            GuildsList[pos].ChannelConfig.RuleChannelID = role.Id;
+            GuildsList.ChannelConfig.RuleChannelID = role.Id;
             var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();
             try
@@ -234,9 +217,7 @@ namespace HC_DBot.Commands
         [Command("rolechange"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator), Priority(1)]
         public async Task RoleChangeID(CommandContext ctx, ulong ID)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == ctx.Guild.Id);
-            if (pos == -1) return;
-            GuildsList[pos].ChannelConfig.RuleChannelID = ID;
+            GuildsList.ChannelConfig.RuleChannelID = ID;
             var role = ctx.Guild.GetRole(ID);
             var msqlCon = new MySqlConnection(Program.config.MysqlCon);
             await msqlCon.OpenAsync();

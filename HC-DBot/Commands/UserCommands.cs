@@ -5,7 +5,9 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using MySql.Data.MySqlClient;
 using System;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using static HC_DBot.MainClasses.Bot;
 
@@ -100,13 +102,17 @@ namespace HC_DBot.Commands
         [Command("author"), RequirePrefixes("$")]
         public async Task Author(CommandContext ctx)
         {
+            WebRequest request = WebRequest.Create($"https://cdn.pbrd.co/images/HEjzvIZ.png");
+            WebResponse response = await request.GetResponseAsync();
+            Stream dataStream = response.GetResponseStream();
+
             var lala = await ctx.Client.GetUserAsync(199858858166976513);
             var builder = new DiscordEmbedBuilder();
             builder.WithTitle("Author contact data of HC Control");
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
-            builder.WithImageUrl("https://cdn.pbrd.co/images/HEjzvIZ.png");
+            builder.WithImageUrl($"attachment://authorimage.png");
             builder.WithDescription("The author of the HC Control is Lala Sabathil");
-            builder.AddField("Discord server", $"[Invite Link](https://discord.gg/THZue3w)");
+            builder.AddField("Discord server", $"[Invite Link](https://discord.gg/354TGs2)");
             builder.AddField("Discord user", lala.Mention);
             builder.AddField("Facebook", "[Profile Link](https://www.facebook.com/LalaDeviChan)");
             builder.AddField("Twitter", "[Profile Link](https://twitter.com/Lala_devi_chan)");
@@ -116,7 +122,7 @@ namespace HC_DBot.Commands
             builder.WithColor(new DiscordColor(r: 75, g: 80, b: 255));
             builder.WithFooter($"©2018 Lala Sabathil");
             await ctx.Message.DeleteAsync("command hide");
-            await ctx.Message.RespondAsync(embed: builder.Build());
+            await ctx.Message.RespondWithFileAsync(fileName: $"authorimage.png", fileData: dataStream, embed: builder.Build());
         }
     }
 }

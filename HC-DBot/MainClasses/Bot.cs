@@ -18,7 +18,7 @@ namespace HC_DBot.MainClasses
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
         public static MySqlConnection connection;
-        public static Guilds GuildsList = new Guilds();
+        public static List<Guilds> GuildsList = new List<Guilds>();
         public static CancellationTokenSource ShutdownRequest;
 
         public Bot(string Token, string mysqlCon)
@@ -105,12 +105,12 @@ namespace HC_DBot.MainClasses
                     {
                         foreach (var user in BDayPPL)
                         {
-                            if (GuildsList.ModuleConfig.BirthdayModule)
+                            if (GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].ModuleConfig.BirthdayModule)
                             {
-                                var Guild = await Client.GetGuildAsync(GuildsList.GuildID);
+                                var Guild = await Client.GetGuildAsync(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildID);
                                 var DM = await Guild.GetMemberAsync(user);
-                                GuildsList.GuildMembers.Find(x => x.UserID == user).BdaySent = true;
-                                var resetTrigger = ResetBday(GuildsList.GuildMembers.Find(x => x.UserID == user));
+                                GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user).BdaySent = true;
+                                var resetTrigger = ResetBday(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user));
                                 resetTrigger.Wait(1000);
                                 await DM.SendMessageAsync("Congrats!");
                             }
@@ -147,7 +147,7 @@ namespace HC_DBot.MainClasses
                     guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = guild.Value.Name;
                     guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = guild.Value.Owner.Id;
                     await guildcmd.ExecuteNonQueryAsync();
-                    GuildsList = new Guilds
+                    GuildsList.Add(new Guilds
                     {
                         GuildID = guild.Value.Id,
                         GuildName = guild.Value.Name,
@@ -156,18 +156,19 @@ namespace HC_DBot.MainClasses
                         GuildMembers = new List<Members>(),
                         ChannelConfig = new ChannelConfig(),
                         ModuleConfig = new ModuleConfig()
-                    };
+                    });
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
                 } //Guild Top
+                int pos = GuildsList.FindIndex(x => x.GuildID == guild.Value.Id);
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
                     guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
+                    guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelId`, `infoChannelId`, `cmdChannelId`, `logChannelId`, `roleId`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
                     guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                     guildcmd.Parameters.Add("customInfo", MySqlDbType.VarChar).Value = "to be filled";
                     await guildcmd.ExecuteNonQueryAsync();
@@ -185,17 +186,17 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList.ChannelConfig = (new ChannelConfig
+                        GuildsList[pos].ChannelConfig = (new ChannelConfig
                         {
-                            RuleChannelID = Convert.ToUInt64(reader["ruleChannelID"]),
-                            InfoChannelID = Convert.ToUInt64(reader["infoChannelID"]),
-                            CmdChannelID = Convert.ToUInt64(reader["cmdChannelID"]),
+                            RuleChannelID = Convert.ToUInt64(reader["ruleChannelId"]),
+                            InfoChannelID = Convert.ToUInt64(reader["infoChannelId"]),
+                            CmdChannelID = Convert.ToUInt64(reader["cmdChannelId"]),
+                            LogChannelID = Convert.ToUInt64(reader["roleId"]),
                             RoleID = Convert.ToUInt64(reader["roleID"]),
                             CustomInfo = reader["customInfo"].ToString()
                         });
                     }
-                    await connection.CloseAsync();
-                    await connection.OpenAsync();
+                    reader.Close();
                 }
                 catch (Exception ex)
                 {
@@ -218,6 +219,8 @@ namespace HC_DBot.MainClasses
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
                 }
+                await connection.CloseAsync();
+                await connection.OpenAsync();
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
@@ -226,15 +229,14 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList.ModuleConfig = new ModuleConfig
+                        GuildsList[pos].ModuleConfig = new ModuleConfig
                         {
                             AdminModule = Convert.ToBoolean(reader["adminModule"]),
                             GreetModule = Convert.ToBoolean(reader["greetModule"]),
                             BirthdayModule = Convert.ToBoolean(reader["birthdayModule"])
                         };
                     }
-                    await connection.CloseAsync();
-                    await connection.OpenAsync();
+                    reader.Close();
                 }
                 catch (Exception ex)
                 {
@@ -249,13 +251,12 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList.ModuleConfig.GreetMessages.Add(new GreetMessages
+                        GuildsList[pos].ModuleConfig.GreetMessages.Add(new GreetMessages
                         {
                             AnnounceString = reader["announceString"].ToString()
                         });
                     }
-                    await connection.CloseAsync();
-                    await connection.OpenAsync();
+                    reader.Close();
                 }
                 catch (Exception ex)
                 {
@@ -315,7 +316,7 @@ namespace HC_DBot.MainClasses
                         cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
                         cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
                         await cmd.ExecuteNonQueryAsync();
-                        GuildsList.GuildMembers.Add(new Members
+                        GuildsList[pos].GuildMembers.Add(new Members
                         {
                             UserID = user.Id,
                             UserName = user.Username,
@@ -346,7 +347,8 @@ namespace HC_DBot.MainClasses
                 cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = e.Member.Username;
                 cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = e.Member.Discriminator;
                 await cmd.ExecuteNonQueryAsync();
-                GuildsList.GuildMembers.Add(new Members
+                int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
+                GuildsList[pos].GuildMembers.Add(new Members
                 {
                     UserID = e.Member.Id,
                     UserName = e.Member.Username,
@@ -364,27 +366,37 @@ namespace HC_DBot.MainClasses
 
         public async Task GreetUser(GuildMemberAddEventArgs e)
         {
-            if (GuildsList.ModuleConfig.GreetModule)
+            int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
+            if (pos == -1) return;
+            if (GuildsList[pos].ModuleConfig.GreetModule)
             {
                 await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
                 $"You succesfully landed on {e.Guild.Name} \n\n" +
-                $"Please take a look into {e.Guild.GetChannel(GuildsList.ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
-                $"To accept the rules ({e.Guild.GetChannel(GuildsList.ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList.ChannelConfig.CmdChannelID).Mention}.\n" +
-                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList.ChannelConfig.RoleID).Name}*.\n\n" +
-                $"{GuildsList.ChannelConfig.CustomInfo}");
+                $"Please take a look into {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+                $"To accept the rules ({e.Guild.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
+                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
+                $"{GuildsList[pos].ChannelConfig.CustomInfo}");
+                await e.Guild.GetChannel(GuildsList[pos].ChannelConfig.LogChannelID).SendMessageAsync($"User {e.Member.Mention} was greeted.");
             }
         }
 
         public static async Task<string> GreetUserManual(DiscordGuild e, DiscordMember user)
         {
+            Console.WriteLine("find guild");
+            int pos = GuildsList.FindIndex(x => x.GuildID == e.Id);
+            if (pos == -1) return null;
+            Console.WriteLine("build msg");
             string msg = $"Welcome {user.Mention}\n" +
             $"You succesfully landed on {e.Name} \n\n" +
-            $"Please take a look into {e.GetChannel(GuildsList.ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
-            $"To accept the rules ({e.GetChannel(GuildsList.ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.GetChannel(GuildsList.ChannelConfig.CmdChannelID).Mention}.\n" +
-            $"You will automatically get assigned to the role *{e.GetRole(GuildsList.ChannelConfig.RoleID).Name}*.\n\n" +
-            $"{GuildsList.ChannelConfig.CustomInfo}";
+            $"Please take a look into {e.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+            $"To accept the rules ({e.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
+            $"You will automatically get assigned to the role *{e.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
+            $"{GuildsList[pos].ChannelConfig.CustomInfo}";
+
+            Console.WriteLine("waiting 20ms");
 
             await Task.Delay(20);
+            Console.WriteLine("returning");
             return msg;
         }
 
@@ -431,6 +443,7 @@ namespace HC_DBot.MainClasses
         public ulong RuleChannelID { get; set; }
         public ulong InfoChannelID { get; set; }
         public ulong CmdChannelID { get; set; }
+        public ulong LogChannelID { get; set; }
         public ulong RoleID { get; set; }
         public string CustomInfo { get; set; }
     }

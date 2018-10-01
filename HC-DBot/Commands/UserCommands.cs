@@ -25,7 +25,7 @@ namespace HC_DBot.Commands
         public async Task RuleAccept(CommandContext ctx)
         {
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":ok_hand::skin-tone-2:"));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.ChannelConfig.RoleID));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.RoleID));
             await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }
@@ -112,7 +112,7 @@ namespace HC_DBot.Commands
             builder.WithThumbnailUrl("https://cdn.pbrd.co/images/HEjzSg5.png");
             builder.WithImageUrl($"attachment://authorimage.png");
             builder.WithDescription("The author of the HC Control is Lala Sabathil");
-            builder.AddField("Discord server", $"[Invite Link](https://discord.gg/354TGs2)");
+            builder.AddField("Discord server", $"[Invite Link](https://discord.gg/heqF6P4)");
             builder.AddField("Discord user", lala.Mention);
             builder.AddField("Facebook", "[Profile Link](https://www.facebook.com/LalaDeviChan)");
             builder.AddField("Twitter", "[Profile Link](https://twitter.com/Lala_devi_chan)");

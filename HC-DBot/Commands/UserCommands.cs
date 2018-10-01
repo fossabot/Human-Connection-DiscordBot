@@ -25,7 +25,7 @@ namespace HC_DBot.Commands
         public async Task RuleAccept(CommandContext ctx)
         {
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":ok_hand::skin-tone-2:"));
-            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList.Find(x => x.GuildID == ctx.Guild.Id).ChannelConfig.RoleID));
+            await ctx.Member.GrantRoleAsync(ctx.Guild.GetRole(GuildsList[ctx.Guild.Id].ChannelConfig.RoleID));
             await Task.Delay(2000);
             await ctx.Message.DeleteAsync();
         }

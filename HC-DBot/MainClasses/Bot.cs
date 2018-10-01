@@ -18,7 +18,7 @@ namespace HC_DBot.MainClasses
         private CommandsNextExtension CNext;
         private InteractivityExtension INext;
         public static MySqlConnection connection;
-        public static List<Guilds> GuildsList = new List<Guilds>();
+        public static Dictionary<ulong, Guilds> GuildsList = new Dictionary<ulong, Guilds>();
         public static CancellationTokenSource ShutdownRequest;
 
         public Bot(string Token, string mysqlCon)
@@ -36,6 +36,7 @@ namespace HC_DBot.MainClasses
             Client = new DiscordClient(cfg);
             Client.GuildDownloadCompleted += BotGuildsDownloaded;
             Client.GuildMemberAdded += MemberAdd;
+            Client.GuildCreated += BotGuildAdded;
             //Client.MessageReactionAdded += ReactAdd;
             //Client.MessageReactionRemoved += ReactRemove;
             CNext = Client.UseCommandsNext(new CommandsNextConfiguration {
@@ -105,12 +106,13 @@ namespace HC_DBot.MainClasses
                     {
                         foreach (var user in BDayPPL)
                         {
-                            if (GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].ModuleConfig.BirthdayModule)
+                            var entry = GuildsList.First(x => x.Value.GuildMembers.Any(y => y.Key == user));
+                            if (entry.Value.ModuleConfig.BirthdayModule)
                             {
-                                var Guild = await Client.GetGuildAsync(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildID);
+                                var Guild = await Client.GetGuildAsync(entry.Key);
                                 var DM = await Guild.GetMemberAsync(user);
-                                GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user).BdaySent = true;
-                                var resetTrigger = ResetBday(GuildsList[GuildsList.FindIndex(x => x.GuildMembers.Any(y => y.UserID == user))].GuildMembers.Find(x => x.UserID == user));
+                                entry.Value.GuildMembers.First(x => x.Key == user).Value.BdaySent = true;
+                                var resetTrigger = ResetBday(entry.Value.GuildMembers.First(x => x.Key == user).Value);
                                 resetTrigger.Wait(1000);
                                 await DM.SendMessageAsync("Congrats!");
                             }
@@ -147,13 +149,12 @@ namespace HC_DBot.MainClasses
                     guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = guild.Value.Name;
                     guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = guild.Value.Owner.Id;
                     await guildcmd.ExecuteNonQueryAsync();
-                    GuildsList.Add(new Guilds
+                    GuildsList.Add(guild.Value.Id, new Guilds
                     {
-                        GuildID = guild.Value.Id,
                         GuildName = guild.Value.Name,
                         GuildDefaultInvite = null,
                         GuildOwner = guild.Value.Owner.Id,
-                        GuildMembers = new List<Members>(),
+                        GuildMembers = new Dictionary<ulong, Members>(),
                         ChannelConfig = new ChannelConfig(),
                         ModuleConfig = new ModuleConfig()
                     });
@@ -163,12 +164,11 @@ namespace HC_DBot.MainClasses
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
                 } //Guild Top
-                int pos = GuildsList.FindIndex(x => x.GuildID == guild.Value.Id);
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
                     guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelId`, `infoChannelId`, `cmdChannelId`, `logChannelId`, `roleId`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
+                    guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
                     guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                     guildcmd.Parameters.Add("customInfo", MySqlDbType.VarChar).Value = "to be filled";
                     await guildcmd.ExecuteNonQueryAsync();
@@ -177,7 +177,9 @@ namespace HC_DBot.MainClasses
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
-                }
+                } //Guild Chan Conf
+                await connection.CloseAsync();
+                await connection.OpenAsync();
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
@@ -186,12 +188,12 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ChannelConfig = (new ChannelConfig
+                        GuildsList[guild.Value.Id].ChannelConfig = (new ChannelConfig
                         {
                             RuleChannelID = Convert.ToUInt64(reader["ruleChannelId"]),
                             InfoChannelID = Convert.ToUInt64(reader["infoChannelId"]),
                             CmdChannelID = Convert.ToUInt64(reader["cmdChannelId"]),
-                            LogChannelID = Convert.ToUInt64(reader["roleId"]),
+                            LogChannelID = Convert.ToUInt64(reader["logChannelID"]),
                             RoleID = Convert.ToUInt64(reader["roleID"]),
                             CustomInfo = reader["customInfo"].ToString()
                         });
@@ -202,7 +204,7 @@ namespace HC_DBot.MainClasses
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
-                }//Guild Channel Config
+                } //Guild Channel Config Get
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
@@ -218,7 +220,7 @@ namespace HC_DBot.MainClasses
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
-                }
+                } //Module Conf
                 await connection.CloseAsync();
                 await connection.OpenAsync();
                 try
@@ -229,7 +231,7 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ModuleConfig = new ModuleConfig
+                        GuildsList[guild.Value.Id].ModuleConfig = new ModuleConfig
                         {
                             AdminModule = Convert.ToBoolean(reader["adminModule"]),
                             GreetModule = Convert.ToBoolean(reader["greetModule"]),
@@ -242,7 +244,9 @@ namespace HC_DBot.MainClasses
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
-                }//Guild Module Config
+                } //Guild Module Config Get
+                await connection.CloseAsync();
+                await connection.OpenAsync();
                 try
                 {
                     MySqlCommand guildcmd = new MySqlCommand();
@@ -251,7 +255,7 @@ namespace HC_DBot.MainClasses
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        GuildsList[pos].ModuleConfig.GreetMessages.Add(new GreetMessages
+                        GuildsList[guild.Value.Id].ModuleConfig.GreetMessages.Add(new GreetMessages
                         {
                             AnnounceString = reader["announceString"].ToString()
                         });
@@ -262,30 +266,7 @@ namespace HC_DBot.MainClasses
                 {
                     Console.WriteLine("Error: " + ex);
                     Console.WriteLine(ex.StackTrace);
-                }
-                //I guess this will be handled manually for WI access
-                /*foreach (var admin in guild.Value.Members.Where(x => x.Roles.Any(y => y.CheckPermission(DSharpPlus.Permissions.Administrator) == DSharpPlus.PermissionLevel.Allowed)))
-                {
-                    try
-                    {
-                        MySqlCommand guildcmd = new MySqlCommand();
-                        guildcmd.Connection = connection;
-                        guildcmd.CommandText = $"INSERT INTO `guilds.admins` (`guildID`, `userID`, `userName`, `userDiscriminator`, `userPassword`, `userEmail`, `userDiscordEmail`, `changeDate`) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName = userName";
-                        guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
-                        guildcmd.Parameters.Add("userID", MySqlDbType.Int64).Value = admin.Id;
-                        guildcmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = admin.Username;
-                        guildcmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = admin.Discriminator;
-                        guildcmd.Parameters.Add("userPassword", MySqlDbType.VarChar).Value = "soon™";
-                        guildcmd.Parameters.Add("userEmail", MySqlDbType.VarChar).Value = admin.Email;
-                        guildcmd.Parameters.Add("userDiscordEmail", MySqlDbType.VarChar).Value = admin.Email;
-                        await guildcmd.ExecuteNonQueryAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error: " + ex);
-                        Console.WriteLine(ex.StackTrace);
-                    }
-                }*/
+                } //Get Annouce
                 foreach (var emoji in guild.Value.Emojis)
                 {
                     try
@@ -316,9 +297,8 @@ namespace HC_DBot.MainClasses
                         cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
                         cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
                         await cmd.ExecuteNonQueryAsync();
-                        GuildsList[pos].GuildMembers.Add(new Members
+                        GuildsList[guild.Value.Id].GuildMembers.Add(user.Id, new Members
                         {
-                            UserID = user.Id,
                             UserName = user.Username,
                             UserDiscriminator = user.Discriminator,
                             BdaySent = false
@@ -335,6 +315,183 @@ namespace HC_DBot.MainClasses
             Console.WriteLine("UserAdd done!");
         }
 
+        public async Task BotGuildAdded(GuildCreateEventArgs e)
+        {
+            Console.WriteLine(e.Guild.Name);
+            await connection.OpenAsync();
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner";
+                guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
+                guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = e.Guild.Name;
+                guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = e.Guild.Owner.Id;
+                await guildcmd.ExecuteNonQueryAsync();
+                GuildsList.Add(e.Guild.Id, new Guilds
+                {
+                    GuildName = e.Guild.Name,
+                    GuildDefaultInvite = null,
+                    GuildOwner = e.Guild.Owner.Id,
+                    GuildMembers = new Dictionary<ulong, Members>(),
+                    ChannelConfig = new ChannelConfig(),
+                    ModuleConfig = new ModuleConfig()
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Guild Top
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
+                guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
+                guildcmd.Parameters.Add("customInfo", MySqlDbType.VarChar).Value = "to be filled";
+                await guildcmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Guild Chan Conf
+            await connection.CloseAsync();
+            await connection.OpenAsync();
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"SELECT * FROM `guilds.config` WHERE `guildID` = {e.Guild.Id}";
+                var reader = await guildcmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    GuildsList[e.Guild.Id].ChannelConfig = (new ChannelConfig
+                    {
+                        RuleChannelID = Convert.ToUInt64(reader["ruleChannelId"]),
+                        InfoChannelID = Convert.ToUInt64(reader["infoChannelId"]),
+                        CmdChannelID = Convert.ToUInt64(reader["cmdChannelId"]),
+                        LogChannelID = Convert.ToUInt64(reader["logChannelID"]),
+                        RoleID = Convert.ToUInt64(reader["roleID"]),
+                        CustomInfo = reader["customInfo"].ToString()
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Guild Channel Config Get
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"INSERT INTO `modules.config` (`guildID`, `adminModule`, `greetModule`, `birthdayModule`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adminModule=adminModule";
+                guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
+                guildcmd.Parameters.Add("adminModule", MySqlDbType.Int16).Value = 0;
+                guildcmd.Parameters.Add("greetModule", MySqlDbType.Int16).Value = 0;
+                guildcmd.Parameters.Add("birthdayModule", MySqlDbType.Int16).Value = 0;
+                await guildcmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Module Conf
+            await connection.CloseAsync();
+            await connection.OpenAsync();
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"SELECT * FROM `modules.config` WHERE `guildID` = {e.Guild.Id}";
+                var reader = await guildcmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    GuildsList[e.Guild.Id].ModuleConfig = new ModuleConfig
+                    {
+                        AdminModule = Convert.ToBoolean(reader["adminModule"]),
+                        GreetModule = Convert.ToBoolean(reader["greetModule"]),
+                        BirthdayModule = Convert.ToBoolean(reader["birthdayModule"])
+                    };
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Guild Module Config Get
+            await connection.CloseAsync();
+            await connection.OpenAsync();
+            try
+            {
+                MySqlCommand guildcmd = new MySqlCommand();
+                guildcmd.Connection = connection;
+                guildcmd.CommandText = $"SELECT * FROM `modules.greet` WHERE `guildID` = {e.Guild.Id}";
+                var reader = await guildcmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    GuildsList[e.Guild.Id].ModuleConfig.GreetMessages.Add(new GreetMessages
+                    {
+                        AnnounceString = reader["announceString"].ToString()
+                    });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+                Console.WriteLine(ex.StackTrace);
+            } //Get Annouce
+            foreach (var emoji in e.Guild.Emojis)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.Connection = connection;
+                    cmd.CommandText = $"INSERT INTO `guilds.emotes` (`guildID`, `emoteID`, `emoteURL`, `emoteName`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE emoteName=emoteName";
+                    cmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
+                    cmd.Parameters.Add("emoteID", MySqlDbType.Int64).Value = emoji.Id;
+                    cmd.Parameters.Add("emoteURL", MySqlDbType.VarChar).Value = emoji.Url;
+                    cmd.Parameters.Add("emoteName", MySqlDbType.VarChar).Value = emoji.Name;
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                    Console.WriteLine(ex.StackTrace);
+                }
+            }
+            foreach (var user in e.Guild.Members)
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.Connection = connection;
+                    cmd.CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName";
+                    cmd.Parameters.Add("userID", MySqlDbType.Int64).Value = user.Id;
+                    cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
+                    cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
+                    await cmd.ExecuteNonQueryAsync();
+                    GuildsList[e.Guild.Id].GuildMembers.Add(user.Id, new Members
+                    {
+                        UserName = user.Username,
+                        UserDiscriminator = user.Discriminator,
+                        BdaySent = false
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                    Console.WriteLine(ex.StackTrace);
+                }
+            }
+            await connection.CloseAsync();
+        }
+
         public async Task MemberAdd(GuildMemberAddEventArgs e)
         {
             await connection.OpenAsync();
@@ -347,10 +504,8 @@ namespace HC_DBot.MainClasses
                 cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = e.Member.Username;
                 cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = e.Member.Discriminator;
                 await cmd.ExecuteNonQueryAsync();
-                int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
-                GuildsList[pos].GuildMembers.Add(new Members
+                GuildsList[e.Guild.Id].GuildMembers.Add(e.Member.Id, new Members
                 {
-                    UserID = e.Member.Id,
                     UserName = e.Member.Username,
                     UserDiscriminator = e.Member.Discriminator,
                     BdaySent = false
@@ -364,11 +519,9 @@ namespace HC_DBot.MainClasses
             await connection.CloseAsync();
         }
 
-        public async Task GreetUser(GuildMemberAddEventArgs e)
+        /*public async Task GreetUser(GuildMemberAddEventArgs e)
         {
-            int pos = GuildsList.FindIndex(x => x.GuildID == e.Guild.Id);
-            if (pos == -1) return;
-            if (GuildsList[pos].ModuleConfig.GreetModule)
+            if (GuildsList[e.Guild.Id].ModuleConfig.GreetModule)
             {
                 await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
                 $"You succesfully landed on {e.Guild.Name} \n\n" +
@@ -378,27 +531,7 @@ namespace HC_DBot.MainClasses
                 $"{GuildsList[pos].ChannelConfig.CustomInfo}");
                 await e.Guild.GetChannel(GuildsList[pos].ChannelConfig.LogChannelID).SendMessageAsync($"User {e.Member.Mention} was greeted.");
             }
-        }
-
-        public static async Task<string> GreetUserManual(DiscordGuild e, DiscordMember user)
-        {
-            Console.WriteLine("find guild");
-            int pos = GuildsList.FindIndex(x => x.GuildID == e.Id);
-            if (pos == -1) return null;
-            Console.WriteLine("build msg");
-            string msg = $"Welcome {user.Mention}\n" +
-            $"You succesfully landed on {e.Name} \n\n" +
-            $"Please take a look into {e.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
-            $"To accept the rules ({e.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
-            $"You will automatically get assigned to the role *{e.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
-            $"{GuildsList[pos].ChannelConfig.CustomInfo}";
-
-            Console.WriteLine("waiting 20ms");
-
-            await Task.Delay(20);
-            Console.WriteLine("returning");
-            return msg;
-        }
+        }*/
 
         /*public async Task ReactAdd(MessageReactionAddEventArgs e)
         {
@@ -421,18 +554,16 @@ namespace HC_DBot.MainClasses
 
     public class Guilds
     {
-        public ulong GuildID { get; set; }
         public string GuildName { get; set; }
         public string GuildDefaultInvite { get; set; }
         public ulong GuildOwner { get; set; }
-        public List<Members> GuildMembers { get; set; }
+        public Dictionary<ulong, Members> GuildMembers { get; set; }
         public ChannelConfig ChannelConfig { get; set; }
         public ModuleConfig ModuleConfig { get; set; }
     }
 
     public class Members
     {
-        public ulong UserID { get; set; }
         public string UserName { get; set; }
         public string UserDiscriminator { get; set; }
         public bool BdaySent { get; set; }

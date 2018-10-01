@@ -241,9 +241,7 @@ namespace HC_DBot.Commands
         public async Task GreetManual(CommandContext ctx, DiscordMember user)
         {
             var msg = GreetUserManual(ctx.Guild, user);
-            var dm = await user.CreateDmChannelAsync();
-            await dm.TriggerTypingAsync();
-            await dm.SendMessageAsync();
+            await user.SendMessageAsync(msg, false, null);
         }
              
     }

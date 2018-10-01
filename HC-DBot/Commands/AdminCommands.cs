@@ -240,7 +240,7 @@ namespace HC_DBot.Commands
         [Command("greet"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator), Priority(1), RequireGuild()]
         public async Task GreetManual(CommandContext ctx, DiscordMember user)
         {
-            var msg = GreetUserManual(ctx.Guild, user);
+            var msg = await GreetUserManual(ctx.Guild, user);
             await user.SendMessageAsync(msg, false, null);
         }
              

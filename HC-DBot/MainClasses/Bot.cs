@@ -8,6 +8,7 @@ using System.Threading;
 using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Collections.Generic;
+using DSharpPlus.Entities;
 
 namespace HC_DBot.MainClasses
 {
@@ -372,6 +373,19 @@ namespace HC_DBot.MainClasses
                 $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList.ChannelConfig.RoleID).Name}*.\n\n" +
                 $"{GuildsList.ChannelConfig.CustomInfo}");
             }
+        }
+
+        public static async Task<string> GreetUserManual(DiscordGuild e, DiscordMember user)
+        {
+            string msg = $"Welcome {user.Mention}\n" +
+            $"You succesfully landed on {e.Name} \n\n" +
+            $"Please take a look into {e.GetChannel(GuildsList.ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+            $"To accept the rules ({e.GetChannel(GuildsList.ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.GetChannel(GuildsList.ChannelConfig.CmdChannelID).Mention}.\n" +
+            $"You will automatically get assigned to the role *{e.GetRole(GuildsList.ChannelConfig.RoleID).Name}*.\n\n" +
+            $"{GuildsList.ChannelConfig.CustomInfo}";
+
+            await Task.Delay(20);
+            return msg;
         }
 
         /*public async Task ReactAdd(MessageReactionAddEventArgs e)

@@ -236,5 +236,15 @@ namespace HC_DBot.Commands
             await msqlCon.CloseAsync();
             await ctx.RespondAsync("set channel to: " + role.Name);
         }
+
+        [Command("greet"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator), Priority(1), RequireGuild()]
+        public async Task GreetManual(CommandContext ctx, DiscordMember user)
+        {
+            var msg = GreetUserManual(ctx.Guild, user);
+            var dm = await user.CreateDmChannelAsync();
+            await dm.TriggerTypingAsync();
+            await dm.SendMessageAsync();
+        }
+             
     }
 }

@@ -530,6 +530,7 @@ namespace HC_DBot.MainClasses
 
         public async Task MemberAdd(GuildMemberAddEventArgs e)
         {
+            await GreetUser(e);
             await connection.OpenAsync();
             try
             {
@@ -548,7 +549,6 @@ namespace HC_DBot.MainClasses
                     UserDiscriminator = e.Member.Discriminator,
                     BdaySent = false
                 });
-                await GreetUser(e);
             }
             catch (Exception ex)
             {
@@ -569,7 +569,7 @@ namespace HC_DBot.MainClasses
                 $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[e.Guild.Id].ChannelConfig.RoleID).Name}*.\n\n" +
                 $"{GuildsList[e.Guild.Id].ChannelConfig.CustomInfo}");
                 
-                await LogAction(e.Guild, msg, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted");
+                await LogAction(e.Guild, msg, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted", DiscordColor.Green);
             }
         }
 
@@ -591,7 +591,7 @@ namespace HC_DBot.MainClasses
             }
         }*/
 
-        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message, DiscordColor color)
         {
 
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
@@ -602,7 +602,7 @@ namespace HC_DBot.MainClasses
 
             // Init builder
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
-            builder.WithColor(DiscordColor.DarkBlue);
+            builder.WithColor(color);
             // Build author
             builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
             // Build Header

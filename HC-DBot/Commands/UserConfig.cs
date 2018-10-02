@@ -14,7 +14,7 @@ namespace HC_DBot.Commands
     [Group("config")]
     class UserConfig : BaseCommandModule
     {
-        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message, DiscordColor color)
         {
 
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
@@ -25,7 +25,7 @@ namespace HC_DBot.Commands
 
             // Init builder
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
-            builder.WithColor(DiscordColor.DarkBlue);
+            builder.WithColor(color);
             // Build author
             builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
             // Build Header

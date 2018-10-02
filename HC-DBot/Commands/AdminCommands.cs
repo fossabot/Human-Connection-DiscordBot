@@ -12,7 +12,7 @@ namespace HC_DBot.Commands
 {
     class AdminCommands : BaseCommandModule
     {
-        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message, DiscordColor color)
         {
 
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
@@ -23,7 +23,7 @@ namespace HC_DBot.Commands
 
             // Init builder
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
-            builder.WithColor(DiscordColor.DarkBlue);
+            builder.WithColor(color);
             // Build author
             builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
             // Build Header
@@ -47,7 +47,7 @@ namespace HC_DBot.Commands
         [Command("shutdown"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task BotShutdown(CommandContext ctx)
         {
-            await LogAction(ctx.Guild, ctx.Message, "BotShutdown", "Shut the bot down", $"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}");
+            await LogAction(ctx.Guild, ctx.Message, "BotShutdown", "Shut the bot down", $"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}", DiscordColor.Orange);
             await ctx.Message.DeleteAsync();
             ShutdownRequest.Cancel();
         }
@@ -57,7 +57,7 @@ namespace HC_DBot.Commands
         {
             await Member.BanAsync(reason: Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
-            await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Username} for reason {Reason}");
+            await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Username} for reason {Reason}", DiscordColor.DarkRed);
         }
 
         [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
@@ -65,7 +65,7 @@ namespace HC_DBot.Commands
         {
             await Member.RemoveAsync(Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
-            await LogAction(ctx.Guild, ctx.Message, "Kick", "Kicks the given user", $"Kicking {Member.Username} for reason {Reason}");
+            await LogAction(ctx.Guild, ctx.Message, "Kick", "Kicks the given user", $"Kicking {Member.Username} for reason {Reason}", DiscordColor.Red);
         }
 
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
@@ -318,7 +318,7 @@ namespace HC_DBot.Commands
             $"To accept the rules ({ctx.Guild.GetChannel(GuildsList[ctx.Guild.Id].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {ctx.Guild.GetChannel(GuildsList[ctx.Guild.Id].ChannelConfig.CmdChannelID).Mention}.\n" +
             $"You will automatically get assigned to the role *{ctx.Guild.GetRole(GuildsList[ctx.Guild.Id].ChannelConfig.RoleID).Name}*.\n\n" +
             $"{GuildsList[ctx.Guild.Id].ChannelConfig.CustomInfo}", false, null);
-            await LogAction(ctx.Guild, ctx.Message, "GreetManuel", "Greet's the given user manually", $"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}");
+            await LogAction(ctx.Guild, ctx.Message, "GreetManuel", "Greet's the given user manually", $"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}", DiscordColor.SpringGreen);
         }
              
     }

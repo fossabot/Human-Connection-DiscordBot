@@ -9,6 +9,8 @@ using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Collections.Generic;
 using DSharpPlus.Entities;
+using System.Net;
+using System.IO;
 
 namespace HC_DBot.MainClasses
 {
@@ -86,8 +88,10 @@ namespace HC_DBot.MainClasses
                     await BdayCon.OpenAsync();
                     List<ulong> BDayPPL = new List<ulong>();
                     Console.WriteLine(BDayPPL.Count);
-                    MySqlCommand bdaycmd = new MySqlCommand();
-                    bdaycmd.Connection = BdayCon;
+                    MySqlCommand bdaycmd = new MySqlCommand
+                    {
+                        Connection = BdayCon
+                    };
                     var timenow = DateTime.Now;
                     string day = timenow.Day.ToString();
                     if (day.Length == 1) day = "0" + day;
@@ -142,9 +146,11 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner"
+                    };
                     guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                     guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = guild.Value.Name;
                     guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = guild.Value.Owner.Id;
@@ -166,9 +172,11 @@ namespace HC_DBot.MainClasses
                 } //Guild Top
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID"
+                    };
                     guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                     guildcmd.Parameters.Add("customInfo", MySqlDbType.VarChar).Value = "to be filled";
                     await guildcmd.ExecuteNonQueryAsync();
@@ -182,9 +190,11 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"SELECT * FROM `guilds.config` WHERE `guildID` = {guild.Value.Id}";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"SELECT * FROM `guilds.config` WHERE `guildID` = {guild.Value.Id}"
+                    };
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
@@ -207,9 +217,11 @@ namespace HC_DBot.MainClasses
                 } //Guild Channel Config Get
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"INSERT INTO `modules.config` (`guildID`, `adminModule`, `greetModule`, `birthdayModule`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adminModule=adminModule";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"INSERT INTO `modules.config` (`guildID`, `adminModule`, `greetModule`, `birthdayModule`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adminModule=adminModule"
+                    };
                     guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                     guildcmd.Parameters.Add("adminModule", MySqlDbType.Int16).Value = 0;
                     guildcmd.Parameters.Add("greetModule", MySqlDbType.Int16).Value = 0;
@@ -225,9 +237,11 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"SELECT * FROM `modules.config` WHERE `guildID` = {guild.Value.Id}";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"SELECT * FROM `modules.config` WHERE `guildID` = {guild.Value.Id}"
+                    };
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
@@ -249,9 +263,11 @@ namespace HC_DBot.MainClasses
                 await connection.OpenAsync();
                 try
                 {
-                    MySqlCommand guildcmd = new MySqlCommand();
-                    guildcmd.Connection = connection;
-                    guildcmd.CommandText = $"SELECT * FROM `modules.greet` WHERE `guildID` = {guild.Value.Id}";
+                    MySqlCommand guildcmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"SELECT * FROM `modules.greet` WHERE `guildID` = {guild.Value.Id}"
+                    };
                     var reader = await guildcmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
@@ -271,9 +287,11 @@ namespace HC_DBot.MainClasses
                 {
                     try
                     {
-                        MySqlCommand cmd = new MySqlCommand();
-                        cmd.Connection = connection;
-                        cmd.CommandText = $"INSERT INTO `guilds.emotes` (`guildID`, `emoteID`, `emoteURL`, `emoteName`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE emoteName=emoteName";
+                        MySqlCommand cmd = new MySqlCommand
+                        {
+                            Connection = connection,
+                            CommandText = $"INSERT INTO `guilds.emotes` (`guildID`, `emoteID`, `emoteURL`, `emoteName`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE emoteName=emoteName"
+                        };
                         cmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = guild.Value.Id;
                         cmd.Parameters.Add("emoteID", MySqlDbType.Int64).Value = emoji.Id;
                         cmd.Parameters.Add("emoteURL", MySqlDbType.VarChar).Value = emoji.Url;
@@ -290,9 +308,11 @@ namespace HC_DBot.MainClasses
                 {
                     try
                     {
-                        MySqlCommand cmd = new MySqlCommand();
-                        cmd.Connection = connection;
-                        cmd.CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName";
+                        MySqlCommand cmd = new MySqlCommand
+                        {
+                            Connection = connection,
+                            CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName"
+                        };
                         cmd.Parameters.Add("userID", MySqlDbType.Int64).Value = user.Id;
                         cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
                         cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
@@ -321,9 +341,11 @@ namespace HC_DBot.MainClasses
             await connection.OpenAsync();
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner"
+                };
                 guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
                 guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = e.Guild.Name;
                 guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = e.Guild.Owner.Id;
@@ -345,9 +367,11 @@ namespace HC_DBot.MainClasses
             } //Guild Top
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"INSERT INTO `guilds.config` (`guildID`, `ruleChannelID`, `infoChannelID`, `cmdChannelID`, `logChannelID`, `roleID`, `customInfo`) VALUES (?, 0, 0, 0, 0, 0, ?) ON DUPLICATE KEY UPDATE ruleChannelID=ruleChannelID"
+                };
                 guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
                 guildcmd.Parameters.Add("customInfo", MySqlDbType.VarChar).Value = "to be filled";
                 await guildcmd.ExecuteNonQueryAsync();
@@ -361,9 +385,11 @@ namespace HC_DBot.MainClasses
             await connection.OpenAsync();
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"SELECT * FROM `guilds.config` WHERE `guildID` = {e.Guild.Id}";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"SELECT * FROM `guilds.config` WHERE `guildID` = {e.Guild.Id}"
+                };
                 var reader = await guildcmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -386,9 +412,11 @@ namespace HC_DBot.MainClasses
             } //Guild Channel Config Get
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"INSERT INTO `modules.config` (`guildID`, `adminModule`, `greetModule`, `birthdayModule`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adminModule=adminModule";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"INSERT INTO `modules.config` (`guildID`, `adminModule`, `greetModule`, `birthdayModule`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE adminModule=adminModule"
+                };
                 guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
                 guildcmd.Parameters.Add("adminModule", MySqlDbType.Int16).Value = 0;
                 guildcmd.Parameters.Add("greetModule", MySqlDbType.Int16).Value = 0;
@@ -404,9 +432,11 @@ namespace HC_DBot.MainClasses
             await connection.OpenAsync();
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"SELECT * FROM `modules.config` WHERE `guildID` = {e.Guild.Id}";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"SELECT * FROM `modules.config` WHERE `guildID` = {e.Guild.Id}"
+                };
                 var reader = await guildcmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -428,9 +458,11 @@ namespace HC_DBot.MainClasses
             await connection.OpenAsync();
             try
             {
-                MySqlCommand guildcmd = new MySqlCommand();
-                guildcmd.Connection = connection;
-                guildcmd.CommandText = $"SELECT * FROM `modules.greet` WHERE `guildID` = {e.Guild.Id}";
+                MySqlCommand guildcmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"SELECT * FROM `modules.greet` WHERE `guildID` = {e.Guild.Id}"
+                };
                 var reader = await guildcmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -450,9 +482,11 @@ namespace HC_DBot.MainClasses
             {
                 try
                 {
-                    MySqlCommand cmd = new MySqlCommand();
-                    cmd.Connection = connection;
-                    cmd.CommandText = $"INSERT INTO `guilds.emotes` (`guildID`, `emoteID`, `emoteURL`, `emoteName`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE emoteName=emoteName";
+                    MySqlCommand cmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"INSERT INTO `guilds.emotes` (`guildID`, `emoteID`, `emoteURL`, `emoteName`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE emoteName=emoteName"
+                    };
                     cmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
                     cmd.Parameters.Add("emoteID", MySqlDbType.Int64).Value = emoji.Id;
                     cmd.Parameters.Add("emoteURL", MySqlDbType.VarChar).Value = emoji.Url;
@@ -469,9 +503,11 @@ namespace HC_DBot.MainClasses
             {
                 try
                 {
-                    MySqlCommand cmd = new MySqlCommand();
-                    cmd.Connection = connection;
-                    cmd.CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName";
+                    MySqlCommand cmd = new MySqlCommand
+                    {
+                        Connection = connection,
+                        CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName"
+                    };
                     cmd.Parameters.Add("userID", MySqlDbType.Int64).Value = user.Id;
                     cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = user.Username;
                     cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = user.Discriminator;
@@ -497,9 +533,11 @@ namespace HC_DBot.MainClasses
             await connection.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"INSERT INTO `guilds.users` (`userID`, `userName`, `userDiscriminator`, `Birthdate`, `changeDate`) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE userName=userName"
+                };
                 cmd.Parameters.Add("userID", MySqlDbType.Int64).Value = e.Member.Id;
                 cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = e.Member.Username;
                 cmd.Parameters.Add("userDiscriminator", MySqlDbType.VarChar).Value = e.Member.Discriminator;
@@ -550,6 +588,34 @@ namespace HC_DBot.MainClasses
                 await GMember.RevokeRoleAsync(e.Channel.Guild.GetRole(testGroup), "Role react");
             }
         }*/
+
+        public static async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        {
+
+            DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
+
+            WebRequest request = WebRequest.Create($"https://png2.kisspng.com/sh/ae7a514d72b233a0ccf5aff823ba701f/L0KzQYm3VMAzN5J0fZH0aYP2gLBuTfcue6ZujNc2Z3Byd73sTgN6e6VqhZ9qZH3sfrr6lQJifJD3ReV4ZoT6ccPsTfRmeJ10RdNtbXnxecT7kvF1d6MyTdNsMnHlRIjoWcZmPmozTKo7N0K7QYK4VcIzP2E8Sqk6Nkm3PsH1h5==/kisspng-g-suite-google-system-administrator-software-deplo-administrator-5ac2ab47a96e69.482728111522707271694.png");
+            WebResponse response = await request.GetResponseAsync();
+            Stream dataStream = response.GetResponseStream();
+
+            // Init builder
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
+            // Build author
+            builder.Author.Name = $"{msg.Author.Mention}";
+            builder.Author.IconUrl = $"{msg.Author.AvatarUrl}";
+            // Build Header
+            builder.Title = "Changelog";
+            builder.Description = "Logged user/bot action";
+            builder.ThumbnailUrl = "attachment://logthumbnail.png";
+            // Build content
+            builder.AddField(name: "Function", value: $"{functionName}");
+            builder.AddField(name: "Description", value: $"{description}");
+            // Build footer
+            builder.Footer.Text = $"{message}";
+            builder.WithTimestamp(msg.CreationTimestamp);
+
+            await channel.SendFileAsync(fileName: "logthumbnail.png", fileData: dataStream, content: null, tts: false, embed: builder.Build());
+        }
     }
 
     public class Guilds

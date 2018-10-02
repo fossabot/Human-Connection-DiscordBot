@@ -18,9 +18,11 @@ namespace HC_DBot.Commands
             try
             {
                 await connection.OpenAsync();
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = $"UPDATE `guilds.users` SET `Birthdate` = ? WHERE `guilds.users`.`userID` = {ctx.User.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"UPDATE `guilds.users` SET `Birthdate` = ? WHERE `guilds.users`.`userID` = {ctx.User.Id}"
+                };
                 cmd.Parameters.Add("Birthdate", MySqlDbType.Date).Value = date.Date;
                 await cmd.ExecuteNonQueryAsync();
                 await ctx.RespondAsync($"Set your birthday to: {date.Date.ToShortDateString()}");
@@ -39,9 +41,11 @@ namespace HC_DBot.Commands
             try
             {
                 await connection.OpenAsync();
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = $"SELECT * FROM `guilds.users` WHERE `guilds.users`.`userID` = {user.Id} LIMIT 1";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = connection,
+                    CommandText = $"SELECT * FROM `guilds.users` WHERE `guilds.users`.`userID` = {user.Id} LIMIT 1"
+                };
                 var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {

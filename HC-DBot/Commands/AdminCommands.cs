@@ -53,9 +53,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `greetModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `modules.config` SET `greetModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -83,9 +85,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `birthdayModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `modules.config` SET `birthdayModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -113,9 +117,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `modules.config` SET `adminModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `modules.config` SET `adminModule` = '{Convert.ToInt16(GuildsList[ctx.Guild.Id].ModuleConfig.GreetModule)}' WHERE `modules.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -134,9 +140,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `ruleChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `ruleChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -156,9 +164,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `infoChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `infoChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -178,9 +188,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `cmdChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `cmdChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -200,9 +212,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `logChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `logChannelID` = '{channel.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -222,9 +236,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `roleID` = '{role.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `roleID` = '{role.Id}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -245,9 +261,11 @@ namespace HC_DBot.Commands
             await msqlCon.OpenAsync();
             try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = msqlCon;
-                cmd.CommandText = $"UPDATE `guilds.config` SET `roleID` = '{ID}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}";
+                MySqlCommand cmd = new MySqlCommand
+                {
+                    Connection = msqlCon,
+                    CommandText = $"UPDATE `guilds.config` SET `roleID` = '{ID}' WHERE `guilds.config`.`guildID` = {ctx.Guild.Id}"
+                };
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -268,7 +286,7 @@ namespace HC_DBot.Commands
             $"To accept the rules ({ctx.Guild.GetChannel(GuildsList[ctx.Guild.Id].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {ctx.Guild.GetChannel(GuildsList[ctx.Guild.Id].ChannelConfig.CmdChannelID).Mention}.\n" +
             $"You will automatically get assigned to the role *{ctx.Guild.GetRole(GuildsList[ctx.Guild.Id].ChannelConfig.RoleID).Name}*.\n\n" +
             $"{GuildsList[ctx.Guild.Id].ChannelConfig.CustomInfo}", false, null);
-            await ctx.Guild.GetChannel(GuildsList[ctx.Guild.Id].ChannelConfig.LogChannelID).SendMessageAsync($"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}");
+            await LogAction(ctx.Guild, ctx.Message, "GreetManuel", "Greet's the given user manually", $"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}");
         }
              
     }

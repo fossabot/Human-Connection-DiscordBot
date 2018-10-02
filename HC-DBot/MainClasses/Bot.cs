@@ -38,6 +38,7 @@ namespace HC_DBot.MainClasses
             Client = new DiscordClient(cfg);
             Client.GuildDownloadCompleted += BotGuildsDownloaded;
             Client.GuildMemberAdded += MemberAdd;
+            Client.GuildMemberUpdated += MemberUpdate;
             Client.GuildMemberRemoved += MemberLeave;
             Client.GuildCreated += BotGuildAdded;
             //Client.MessageReactionAdded += ReactAdd;
@@ -592,6 +593,19 @@ namespace HC_DBot.MainClasses
             $"{GuildsList[e.Guild.Id].ChannelConfig.CustomInfo}");
                 
             await LogAction(e.Guild, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted", DiscordColor.Green);
+        }
+
+        public async Task MemberUpdate(GuildMemberUpdateEventArgs e)
+        {
+            if (e.NicknameBefore != e.NicknameAfter)
+            {
+                await LogAction(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Nickname change from {e.NicknameBefore} to {e.NicknameAfter}", DiscordColor.Green);
+            }
+            else if (e.RolesBefore != e.RolesAfter)
+            {
+                await LogAction(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Role change from {e.RolesBefore.ToString()} to {e.RolesAfter.ToString()}", DiscordColor.Green);
+            }
+            
         }
 
         /*public async Task ReactAdd(MessageReactionAddEventArgs e)

@@ -57,7 +57,7 @@ namespace HC_DBot.Commands
         {
             await Member.BanAsync(reason: Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
-            await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Nickname} for reason {Reason}");
+            await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Username} for reason {Reason}");
         }
 
         [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
@@ -65,7 +65,7 @@ namespace HC_DBot.Commands
         {
             await Member.RemoveAsync(Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
-            await LogAction(ctx.Guild, ctx.Message, "Kick", "Kicks the given user", $"Kicking {Member.Nickname} for reason {Reason}");
+            await LogAction(ctx.Guild, ctx.Message, "Kick", "Kicks the given user", $"Kicking {Member.Username} for reason {Reason}");
         }
 
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]

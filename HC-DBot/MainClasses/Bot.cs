@@ -77,8 +77,7 @@ namespace HC_DBot.MainClasses
 
             DiscordActivity stopActivity = new DiscordActivity
             {
-                Name = "Shutdown",
-                ActivityType = ActivityType.ListeningTo
+                Name = "Shutdown"
             };
             await Client.UpdateStatusAsync(activity: stopActivity, userStatus: UserStatus.Offline, idleSince: null);
 
@@ -346,8 +345,8 @@ namespace HC_DBot.MainClasses
 
             DiscordActivity startActivity = new DiscordActivity
             {
-                Name = "Type $help for help pages and $ author for author information",
-                ActivityType = ActivityType.Watching
+                Name = "Type $help for help pages and $author for author information",
+                ActivityType = ActivityType.Playing
             };
             await Client.UpdateStatusAsync(activity: startActivity, userStatus: UserStatus.Online, idleSince: null);
         }

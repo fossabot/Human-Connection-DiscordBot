@@ -17,11 +17,11 @@ NuGet Source: https://www.myget.org/F/dsharpplus-nightly/api/v3/index.json
 
 - [x] Rewrite Admin Commands
 
-- [ ] First test run
+- [x] First test run
 
-- [ ] Adding extended features
+- [x] Adding extended features
 
-- [ ] Compiling working version for HC
+- [x] Compiling working version for HC
 
 ## Developer discord
 HC Discord. https://discord.gg/354TGs2

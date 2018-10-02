@@ -5,11 +5,41 @@ using System.Threading.Tasks;
 using static HC_DBot.MainClasses.Bot;
 using MySql.Data.MySqlClient;
 using System;
+using System.Net;
+using System.IO;
 
 namespace HC_DBot.Commands
 {
     class AdminCommands : BaseCommandModule
     {
+        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        {
+
+            DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
+
+            WebRequest request = WebRequest.Create($"https://png2.kisspng.com/sh/ae7a514d72b233a0ccf5aff823ba701f/L0KzQYm3VMAzN5J0fZH0aYP2gLBuTfcue6ZujNc2Z3Byd73sTgN6e6VqhZ9qZH3sfrr6lQJifJD3ReV4ZoT6ccPsTfRmeJ10RdNtbXnxecT7kvF1d6MyTdNsMnHlRIjoWcZmPmozTKo7N0K7QYK4VcIzP2E8Sqk6Nkm3PsH1h5==/kisspng-g-suite-google-system-administrator-software-deplo-administrator-5ac2ab47a96e69.482728111522707271694.png");
+            WebResponse response = await request.GetResponseAsync();
+            Stream dataStream = response.GetResponseStream();
+
+            // Init builder
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
+            builder.WithColor(DiscordColor.DarkBlue);
+            // Build author
+            builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
+            // Build Header
+            builder.WithTitle("Changelog");
+            builder.WithDescription("Logged user/bot action");
+            builder.WithThumbnailUrl("attachment://logthumbnail.png");
+            // Build content
+            builder.AddField(name: "Function", value: $"{functionName}");
+            builder.AddField(name: "Description", value: $"{description}");
+            builder.AddField(name: "Message", value: $"{message}");
+            // Build footer
+            builder.WithFooter("Copyright 2018 Lala Sabathil");
+            builder.WithTimestamp(msg.CreationTimestamp);
+
+            await channel.SendFileAsync(fileName: "logthumbnail.png", fileData: dataStream, content: null, tts: false, embed: builder.Build());
+        }
 
         public static ulong hcBotLogChannelId = 490977974787768353;
         public static ulong botEmote = 491234510659125271;

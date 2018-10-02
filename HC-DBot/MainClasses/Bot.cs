@@ -548,6 +548,7 @@ namespace HC_DBot.MainClasses
                     UserDiscriminator = e.Member.Discriminator,
                     BdaySent = false
                 });
+                await GreetUser(e);
             }
             catch (Exception ex)
             {
@@ -557,19 +558,20 @@ namespace HC_DBot.MainClasses
             await connection.CloseAsync();
         }
 
-        /*public async Task GreetUser(GuildMemberAddEventArgs e)
+        public async Task GreetUser(GuildMemberAddEventArgs e)
         {
             if (GuildsList[e.Guild.Id].ModuleConfig.GreetModule)
             {
-                await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
+                var msg = await e.Member.SendMessageAsync($"Welcome {e.Member.Mention}\n" +
                 $"You succesfully landed on {e.Guild.Name} \n\n" +
-                $"Please take a look into {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
-                $"To accept the rules ({e.Guild.GetChannel(GuildsList[pos].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[pos].ChannelConfig.CmdChannelID).Mention}.\n" +
-                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[pos].ChannelConfig.RoleID).Name}*.\n\n" +
-                $"{GuildsList[pos].ChannelConfig.CustomInfo}");
-                await e.Guild.GetChannel(GuildsList[pos].ChannelConfig.LogChannelID).SendMessageAsync($"User {e.Member.Mention} was greeted.");
+                $"Please take a look into {e.Guild.GetChannel(GuildsList[e.Guild.Id].ChannelConfig.InfoChannelID).Mention} for informations regarding this server.\n" +
+                $"To accept the rules ({e.Guild.GetChannel(GuildsList[e.Guild.Id].ChannelConfig.RuleChannelID).Mention}), please write `$accept-rules` in {e.Guild.GetChannel(GuildsList[e.Guild.Id].ChannelConfig.CmdChannelID).Mention}.\n" +
+                $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[e.Guild.Id].ChannelConfig.RoleID).Name}*.\n\n" +
+                $"{GuildsList[e.Guild.Id].ChannelConfig.CustomInfo}");
+                
+                await LogAction(e.Guild, msg, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted");
             }
-        }*/
+        }
 
         /*public async Task ReactAdd(MessageReactionAddEventArgs e)
         {
@@ -589,7 +591,7 @@ namespace HC_DBot.MainClasses
             }
         }*/
 
-        public static async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
+        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message)
         {
 
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
@@ -600,18 +602,19 @@ namespace HC_DBot.MainClasses
 
             // Init builder
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
+            builder.WithColor(DiscordColor.DarkBlue);
             // Build author
-            builder.Author.Name = $"{msg.Author.Mention}";
-            builder.Author.IconUrl = $"{msg.Author.AvatarUrl}";
+            builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
             // Build Header
-            builder.Title = "Changelog";
-            builder.Description = "Logged user/bot action";
-            builder.ThumbnailUrl = "attachment://logthumbnail.png";
+            builder.WithTitle("Changelog");
+            builder.WithDescription("Logged user/bot action");
+            builder.WithThumbnailUrl("attachment://logthumbnail.png");
             // Build content
             builder.AddField(name: "Function", value: $"{functionName}");
             builder.AddField(name: "Description", value: $"{description}");
+            builder.AddField(name: "Message", value: $"{message}");
             // Build footer
-            builder.Footer.Text = $"{message}";
+            builder.WithFooter("Copyright 2018 Lala Sabathil");
             builder.WithTimestamp(msg.CreationTimestamp);
 
             await channel.SendFileAsync(fileName: "logthumbnail.png", fileData: dataStream, content: null, tts: false, embed: builder.Build());

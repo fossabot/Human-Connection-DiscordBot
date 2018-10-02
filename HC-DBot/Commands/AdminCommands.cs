@@ -320,6 +320,33 @@ namespace HC_DBot.Commands
             $"{GuildsList[ctx.Guild.Id].ChannelConfig.CustomInfo}", false, null);
             await LogAction(ctx.Guild, ctx.Message, "GreetManuel", "Greet's the given user manually", $"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}", DiscordColor.SpringGreen);
         }
-             
+        
+        [Command("role-add"), Aliases("r-add"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(1)]
+        public async Task RoleAdd(CommandContext ctx, DiscordMember user, DiscordRole role, [RemainingText] string Reason = null)
+        {
+            await user.GrantRoleAsync(role, Reason);
+            await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Mention} was granted role '{role.Name}'", role.Color);
+        }
+
+        [Command("role-add"), Aliases("r-add"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(2)]
+        public async Task RoleAdd(CommandContext ctx, DiscordMember user, ulong id, [RemainingText] string Reason = null)
+        {
+            await user.GrantRoleAsync(ctx.Guild.GetRole(id), Reason);
+            await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Mention} was granted role '{ctx.Guild.GetRole(id).Name}'", ctx.Guild.GetRole(id).Color);
+        }
+
+        [Command("role-remove"), Aliases("r-rm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(1)]
+        public async Task RoleRemove(CommandContext ctx, DiscordMember user, DiscordRole role, [RemainingText] string Reason = null)
+        {
+            await user.RevokeRoleAsync(role, Reason);
+            await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Mention} was revoked role '{role.Name}'", role.Color);
+        }
+
+        [Command("role-remove"), Aliases("r-rm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(2)]
+        public async Task RoleRemove(CommandContext ctx, DiscordMember user, ulong id, [RemainingText] string Reason = null)
+        {
+            await user.RevokeRoleAsync(ctx.Guild.GetRole(id), Reason);
+            await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Mention} was revoked role '{ctx.Guild.GetRole(id).Name}'", ctx.Guild.GetRole(id).Color);
+        }
     }
 }

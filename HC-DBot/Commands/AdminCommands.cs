@@ -44,7 +44,7 @@ namespace HC_DBot.Commands
         public static ulong hcBotLogChannelId = 490977974787768353;
         public static ulong botEmote = 491234510659125271;
 
-        [Command("shutdown"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        [Command("shutdown"), RequirePrefixes("!"), RequireOwner(), RequireDirectMessage()]
         public async Task BotShutdown(CommandContext ctx)
         {
             await LogAction(ctx.Guild, ctx.Message, "BotShutdown", "Shut the bot down", $"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}", DiscordColor.Orange);
@@ -52,7 +52,7 @@ namespace HC_DBot.Commands
             ShutdownRequest.Cancel();
         }
 
-        [Command("ban"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        [Command("ban"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.BanMembers), RequireGuild()]
         public async Task Ban(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
         {
             await Member.BanAsync(reason: Reason);
@@ -60,7 +60,7 @@ namespace HC_DBot.Commands
             await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Username} for reason {Reason}", DiscordColor.DarkRed);
         }
 
-        [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.KickMembers), RequireGuild()]
         public async Task Kick(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
         {
             await Member.RemoveAsync(Reason);
@@ -309,7 +309,7 @@ namespace HC_DBot.Commands
             await ctx.RespondAsync("set role to: " + role.Name);
         }
 
-        [Command("greet"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        [Command("greet"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator), RequireGuild()]
         public async Task GreetManual(CommandContext ctx, DiscordMember user)
         {
             await user.SendMessageAsync($"Welcome {user.Mention}\n" +
@@ -321,32 +321,20 @@ namespace HC_DBot.Commands
             await LogAction(ctx.Guild, ctx.Message, "GreetManuel", "Greet's the given user manually", $"User {user.Mention} was greeted manually by {ctx.Message.Author.Mention}", DiscordColor.SpringGreen);
         }
         
-        [Command("role-add"), Aliases("r-add"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(1)]
+        [Command("role-add"), Aliases("radd"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), RequireGuild()]
         public async Task RoleAdd(CommandContext ctx, DiscordMember user, DiscordRole role, [RemainingText] string Reason = null)
         {
+            await ctx.Message.DeleteAsync();
             await user.GrantRoleAsync(role, Reason);
             await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Mention} was granted role '{role.Name}'", role.Color);
         }
 
-        [Command("role-add"), Aliases("r-add"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(2)]
-        public async Task RoleAdd(CommandContext ctx, DiscordMember user, ulong id, [RemainingText] string Reason = null)
-        {
-            await user.GrantRoleAsync(ctx.Guild.GetRole(id), Reason);
-            await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Mention} was granted role '{ctx.Guild.GetRole(id).Name}'", ctx.Guild.GetRole(id).Color);
-        }
-
-        [Command("role-remove"), Aliases("r-rm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(1)]
+        [Command("role-remove"), Aliases("rrm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), RequireGuild()]
         public async Task RoleRemove(CommandContext ctx, DiscordMember user, DiscordRole role, [RemainingText] string Reason = null)
         {
+            await ctx.Message.DeleteAsync();
             await user.RevokeRoleAsync(role, Reason);
             await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Mention} was revoked role '{role.Name}'", role.Color);
-        }
-
-        [Command("role-remove"), Aliases("r-rm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), Priority(2)]
-        public async Task RoleRemove(CommandContext ctx, DiscordMember user, ulong id, [RemainingText] string Reason = null)
-        {
-            await user.RevokeRoleAsync(ctx.Guild.GetRole(id), Reason);
-            await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Mention} was revoked role '{ctx.Guild.GetRole(id).Name}'", ctx.Guild.GetRole(id).Color);
         }
     }
 }

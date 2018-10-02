@@ -47,7 +47,7 @@ namespace HC_DBot.Commands
         [Command("shutdown"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
         public async Task BotShutdown(CommandContext ctx)
         {
-            await ctx.Guild.GetChannel(hcBotLogChannelId).SendMessageAsync($"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}");
+            await LogAction(ctx.Guild, ctx.Message, "BotShutdown", "Shut the bot down", $"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}");
             await ctx.Message.DeleteAsync();
             ShutdownRequest.Cancel();
         }
@@ -57,6 +57,7 @@ namespace HC_DBot.Commands
         {
             await Member.BanAsync(reason: Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
+            await LogAction(ctx.Guild, ctx.Message, "Ban", "Bans the given user", $"Baning {Member.Nickname} for reason {Reason}");
         }
 
         [Command("kick"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
@@ -64,6 +65,7 @@ namespace HC_DBot.Commands
         {
             await Member.RemoveAsync(Reason);
             await ctx.Message.DeleteAsync("Admin command hide");
+            await LogAction(ctx.Guild, ctx.Message, "Kick", "Kicks the given user", $"Kicking {Member.Nickname} for reason {Reason}");
         }
 
         [Command("welcometoggle"), Aliases("wt","welcomemessage"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]

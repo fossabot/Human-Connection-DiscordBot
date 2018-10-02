@@ -326,7 +326,7 @@ namespace HC_DBot.Commands
         {
             await ctx.Message.DeleteAsync();
             await user.GrantRoleAsync(role, Reason);
-            await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Mention} was granted role '{role.Name}'", role.Color);
+            await LogAction(ctx.Guild, ctx.Message, "RoleAdd", "Adds given role to given user", $"User {user.Username} was granted role '{role.Name}'", role.Color);
         }
 
         [Command("role-remove"), Aliases("rrm"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.ManageRoles), RequireGuild()]
@@ -334,7 +334,7 @@ namespace HC_DBot.Commands
         {
             await ctx.Message.DeleteAsync();
             await user.RevokeRoleAsync(role, Reason);
-            await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Mention} was revoked role '{role.Name}'", role.Color);
+            await LogAction(ctx.Guild, ctx.Message, "RoleRemove", "Removes given role to given user", $"User {user.Username} was revoked role '{role.Name}'", role.Color);
         }
     }
 }

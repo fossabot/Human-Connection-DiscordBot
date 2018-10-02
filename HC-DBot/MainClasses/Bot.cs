@@ -74,6 +74,14 @@ namespace HC_DBot.MainClasses
             {
                 await Task.Delay(25);
             }
+
+            DiscordActivity stopActivity = new DiscordActivity
+            {
+                Name = "Shutdown",
+                ActivityType = ActivityType.ListeningTo
+            };
+            await Client.UpdateStatusAsync(activity: stopActivity, userStatus: UserStatus.Offline, idleSince: null);
+
             await Client.DisconnectAsync();
             await Task.Delay(2500);
             Dispose();
@@ -335,6 +343,13 @@ namespace HC_DBot.MainClasses
                 await connection.CloseAsync();
             }
             Console.WriteLine("UserAdd done!");
+
+            DiscordActivity startActivity = new DiscordActivity
+            {
+                Name = "Type $help for help pages and $ author for author information",
+                ActivityType = ActivityType.Watching
+            };
+            await Client.UpdateStatusAsync(activity: startActivity, userStatus: UserStatus.Online, idleSince: null);
         }
 
         public async Task BotGuildAdded(GuildCreateEventArgs e)
@@ -346,8 +361,9 @@ namespace HC_DBot.MainClasses
                 MySqlCommand guildcmd = new MySqlCommand
                 {
                     Connection = connection,
-                    CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner"
+                    CommandText = $"INSERT INTO `guilds` (`guildID`, `guildName`, `guildDefaultInvite`, `guildOwner`) VALUES (?, ?, ?, NULL, ?) ON DUPLICATE KEY UPDATE guildOwner=guildOwner"
                 };
+                guildcmd.Parameters.Add("guildID", MySqlDbType.UInt64).Value = e.Guild.Id;
                 guildcmd.Parameters.Add("guildID", MySqlDbType.Int64).Value = e.Guild.Id;
                 guildcmd.Parameters.Add("guildName", MySqlDbType.VarChar).Value = e.Guild.Name;
                 guildcmd.Parameters.Add("guildOwner", MySqlDbType.Int64).Value = e.Guild.Owner.Id;
@@ -551,6 +567,7 @@ namespace HC_DBot.MainClasses
                     UserDiscriminator = e.Member.Discriminator,
                     BdaySent = false
                 });
+                await LogActionNoMsg(e.Guild, "MemberAdd", "Fired on member join", $"User {e.Member.Username} joined", DiscordColor.Yellow);
             }
             catch (Exception ex)
             {
@@ -562,25 +579,8 @@ namespace HC_DBot.MainClasses
 
         public async Task MemberLeave(GuildMemberRemoveEventArgs e)
         {
-            await connection.OpenAsync();
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand
-                {
-                    Connection = connection,
-                    CommandText = $"DELETE FROM `guilds.users` WHERE userName=userName"
-                };
-                cmd.Parameters.Add("userName", MySqlDbType.VarChar).Value = e.Member.Username;
-                await cmd.ExecuteNonQueryAsync();
-                GuildsList[e.Guild.Id].GuildMembers.Remove(e.Member.Id);
-                await LogAction(e.Guild, "MemberLeave", "Fired on member leave", $"User {e.Member.Username} leaved", DiscordColor.IndianRed);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex);
-                Console.WriteLine(ex.StackTrace);
-            }
-            await connection.CloseAsync();
+            GuildsList[e.Guild.Id].GuildMembers.Remove(e.Member.Id);
+            await LogActionNoMsg(e.Guild, "MemberLeave", "Fired on member leave", $"User {e.Member.Username} leaved", DiscordColor.IndianRed);
         }
 
         public async Task GreetUser(GuildMemberAddEventArgs e)
@@ -592,18 +592,29 @@ namespace HC_DBot.MainClasses
             $"You will automatically get assigned to the role *{e.Guild.GetRole(GuildsList[e.Guild.Id].ChannelConfig.RoleID).Name}*.\n\n" +
             $"{GuildsList[e.Guild.Id].ChannelConfig.CustomInfo}");
                 
-            await LogAction(e.Guild, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted", DiscordColor.Green);
+            await LogActionNoMsg(e.Guild, "GreetUser", "Greet's the given user on join", $"User {e.Member.Mention} was greeted", DiscordColor.Green);
         }
 
         public async Task MemberUpdate(GuildMemberUpdateEventArgs e)
         {
+            string nickNameBefore = null;
+
             if (e.NicknameBefore != e.NicknameAfter)
             {
-                await LogAction(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Nickname change from {e.NicknameBefore} to {e.NicknameAfter}", DiscordColor.Green);
+                if (e.NicknameBefore == null)
+                {
+                    nickNameBefore = "the default Username";
+                }
+                else
+                {
+                    nickNameBefore = e.NicknameBefore;
+                }
+
+                await LogActionNoMsg(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Nickname change from *'{e.NicknameBefore}'* to **'{e.NicknameAfter}'**", DiscordColor.Orange);
             }
             else if (e.RolesBefore != e.RolesAfter)
             {
-                await LogAction(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Role change from {e.RolesBefore.ToString()} to {e.RolesAfter.ToString()}", DiscordColor.Green);
+                //await LogActionNoMsg(e.Guild, "MemberUpdate", "Fired when guild members get updated", $"User {e.Member.Username} updated. Role change from {e.RolesBefore.ToString()} to {e.RolesAfter.ToString()}", DiscordColor.Green);
             }
             
         }
@@ -626,59 +637,59 @@ namespace HC_DBot.MainClasses
             }
         }*/
 
-        public async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message, DiscordColor color)
+        public static async Task LogAction(DiscordGuild guild, DiscordMessage msg, string functionName, string description, string message, DiscordColor color)
         {
-
+            Console.WriteLine("LogAction() called");
+            Console.WriteLine("Getting channel");
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
-
-            WebRequest request = WebRequest.Create($"https://png2.kisspng.com/sh/ae7a514d72b233a0ccf5aff823ba701f/L0KzQYm3VMAzN5J0fZH0aYP2gLBuTfcue6ZujNc2Z3Byd73sTgN6e6VqhZ9qZH3sfrr6lQJifJD3ReV4ZoT6ccPsTfRmeJ10RdNtbXnxecT7kvF1d6MyTdNsMnHlRIjoWcZmPmozTKo7N0K7QYK4VcIzP2E8Sqk6Nkm3PsH1h5==/kisspng-g-suite-google-system-administrator-software-deplo-administrator-5ac2ab47a96e69.482728111522707271694.png");
-            WebResponse response = await request.GetResponseAsync();
-            Stream dataStream = response.GetResponseStream();
-
-            // Init builder
+            Console.WriteLine($"Channel: {channel.Name}");
+            Console.WriteLine("DiscordEmbedBuilder()");
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
             builder.WithColor(color);
-            // Build author
             builder.WithAuthor($"{msg.Author.Username}", null, $"{msg.Author.AvatarUrl}");
-            // Build Header
             builder.WithTitle("Changelog");
+            builder.WithThumbnailUrl("https://media.discordapp.net/attachments/496417444613586984/496671867109769216/logthumbnail.png");
             builder.WithDescription("Logged user/bot action");
-            builder.WithThumbnailUrl("attachment://logthumbnail.png");
-            // Build content
             builder.AddField(name: "Function", value: $"{functionName}");
             builder.AddField(name: "Description", value: $"{description}");
             builder.AddField(name: "Message", value: $"{message}");
-            // Build footer
             builder.WithFooter("Copyright 2018 Lala Sabathil");
             builder.WithTimestamp(msg.CreationTimestamp);
 
-            await channel.SendFileAsync(fileName: "logthumbnail.png", fileData: dataStream, content: null, tts: false, embed: builder.Build());
+            Console.WriteLine("Sending..");
+            await channel.SendMessageAsync(content: null, tts: false, embed: builder.Build());
+            Console.WriteLine("Log send");
         }
 
-        public async Task LogAction(DiscordGuild guild, string functionName, string description, string message, DiscordColor color)
+        public static async Task LogActionNoMsg(DiscordGuild guild, string functionName, string description, string message, DiscordColor color)
         {
 
             DiscordChannel channel = guild.GetChannel(GuildsList[guild.Id].ChannelConfig.LogChannelID);
-
-            WebRequest request = WebRequest.Create($"https://png2.kisspng.com/sh/ae7a514d72b233a0ccf5aff823ba701f/L0KzQYm3VMAzN5J0fZH0aYP2gLBuTfcue6ZujNc2Z3Byd73sTgN6e6VqhZ9qZH3sfrr6lQJifJD3ReV4ZoT6ccPsTfRmeJ10RdNtbXnxecT7kvF1d6MyTdNsMnHlRIjoWcZmPmozTKo7N0K7QYK4VcIzP2E8Sqk6Nkm3PsH1h5==/kisspng-g-suite-google-system-administrator-software-deplo-administrator-5ac2ab47a96e69.482728111522707271694.png");
-            WebResponse response = await request.GetResponseAsync();
-            Stream dataStream = response.GetResponseStream();
-
-            // Init builder
+            
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
-            builder.WithColor(color);
-            // Build Header
             builder.WithTitle("Changelog");
+            builder.WithThumbnailUrl("https://media.discordapp.net/attachments/496417444613586984/496671867109769216/logthumbnail.png");
             builder.WithDescription("Logged user/bot action");
-            builder.WithThumbnailUrl("attachment://logthumbnail.png");
-            // Build content
             builder.AddField(name: "Function", value: $"{functionName}");
             builder.AddField(name: "Description", value: $"{description}");
             builder.AddField(name: "Message", value: $"{message}");
-            // Build footer
             builder.WithFooter("Copyright 2018 Lala Sabathil");
 
-            await channel.SendFileAsync(fileName: "logthumbnail.png", fileData: dataStream, content: null, tts: false, embed: builder.Build());
+            await channel.SendMessageAsync(content: null, tts: false, embed: builder.Build());
+        }
+
+        public static async Task LogPrivate(DiscordDmChannel channel, string functionName, string description, string message, DiscordColor color)
+        {
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder();
+            builder.WithTitle("Changelog");
+            builder.WithThumbnailUrl("https://media.discordapp.net/attachments/496417444613586984/496671867109769216/logthumbnail.png");
+            builder.WithDescription("Info");
+            builder.AddField(name: "Function", value: $"{functionName}");
+            builder.AddField(name: "Description", value: $"{description}");
+            builder.AddField(name: "Message", value: $"{message}");
+            builder.WithFooter("Copyright 2018 Lala Sabathil");
+
+            await channel.SendMessageAsync(content: null, tts: false, embed: builder.Build());
         }
     }
 

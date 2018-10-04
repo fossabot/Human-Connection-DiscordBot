@@ -32,11 +32,11 @@ namespace HC_DBot.MainClasses
                 Token = Token,                
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
-                LogLevel = LogLevel.Debug,
+                LogLevel = LogLevel.Warning,
                 UseInternalLogHandler = true
             };
             Client = new DiscordClient(cfg);
-            Client.GuildDownloadCompleted += BotGuildsDownloaded;
+            //Client.GuildDownloadCompleted += BotGuildsDownloaded;
             Client.GuildMemberAdded += MemberAdd;
             Client.GuildMemberUpdated += MemberUpdate;
             Client.GuildMemberRemoved += MemberLeave;

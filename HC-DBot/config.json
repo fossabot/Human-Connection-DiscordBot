@@ -1,4 +1,4 @@
 {
   "Token": "NDg3OTEwODYzNjk3NzM5Nzk3.Dn3dUQ.nmyHskPUyQ0kBqM_gpUBEbd_wGQ",
-  "MysqlCon": "Server=docker.latias.eu;Database=HC-DBot-v2;Uid=hcbot;Pwd=3Em2poPaFiROJ6bI8iyoYInA8of5W8;SslMode=none"
+  "MysqlCon": "Server=127.0.0.1;Database=HC-DBot-v2;Uid=hcbot;Pwd=3Em2poPaFiROJ6bI8iyoYInA8of5W8;SslMode=none"
 }

@@ -2,6 +2,7 @@
 # Human Connection - HC Control - D#+ Rewrite
 
 ![Human Connection Logo](https://human-connection.org/wp-content/uploads/2017/11/human-connection-logo.svg "Human Connection")
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FHuman-Connection%2FHuman-Connection-DiscordBot.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FHuman-Connection%2FHuman-Connection-DiscordBot?ref=badge_shield)
 
 ## Infos
 Language: english / C#
@@ -31,3 +32,7 @@ HC Discord. https://discord.gg/354TGs2
 
 
 Copyright 2018 Lala Sabathil & Speyd3r
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FHuman-Connection%2FHuman-Connection-DiscordBot.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FHuman-Connection%2FHuman-Connection-DiscordBot?ref=badge_large)

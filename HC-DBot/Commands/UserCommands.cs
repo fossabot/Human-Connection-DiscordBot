@@ -33,6 +33,7 @@ namespace HC_DBot.Commands
         [Command("help"), RequirePrefixes("$")]
         public async Task Help(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync("command hide");
             var invy = ctx.Client.GetInteractivity();
             var builder = new DiscordEmbedBuilder();
             builder.WithTitle("Commands of HC Control - Not all are implemented right now");
@@ -58,11 +59,9 @@ namespace HC_DBot.Commands
                 adminBuilder.AddField("!kick <usermention> <reason>", "Kick the mentioned *user* with *reason*");
                 adminBuilder.AddField("!role-add <usermention> <rolename>", "Add *user* to *role*");
                 adminBuilder.AddField("!role-remove <usermention> <rolename>", "Remove *user* from *role*");
-                adminBuilder.AddField("!shutdown", "Stop's the bot and exits the application on bot side");
                 adminBuilder.AddField("!warn <usermention> <message>", "Warn mentioned *user* with *message*");
                 builder.WithFooter($"©2018 Lala Sabathil");
                 adminBuilder.WithColor(new DiscordColor(r: 255, g: 20, b: 80));
-                await ctx.Message.DeleteAsync("command hide");
                 var msg = await ctx.RespondAsync(embed: builder.Build());
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("◀"));
                 await msg.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));

@@ -17,13 +17,6 @@ namespace HC_DBot.Commands
         public static ulong hcBotLogChannelId = 490977974787768353;
         public static ulong botEmote = 491234510659125271;
 
-        [Command("shutdown"), RequirePrefixes("!"), RequireOwner(), RequireDirectMessage()]
-        public async Task BotShutdown(CommandContext ctx)
-        {
-            await LogPrivate(ctx.Channel as DiscordDmChannel, "BotShutdown", "Shut the bot down", $"Shutting down {DiscordEmoji.FromGuildEmote(ctx.Client, botEmote)}", DiscordColor.Orange);
-            ShutdownRequest.Cancel();
-        }
-
         [Command("ban"), RequirePrefixes("!"), RequireUserPermissions(DSharpPlus.Permissions.BanMembers), RequireGuild()]
         public async Task Ban(CommandContext ctx, DiscordMember Member, [RemainingText] string Reason = null)
         {

@@ -44,12 +44,13 @@ namespace HC_DBot.MainClasses
             //Client.MessageReactionAdded += ReactAdd;
             //Client.MessageReactionRemoved += ReactRemove;
             CNext = Client.UseCommandsNext(new CommandsNextConfiguration {
-                StringPrefixes = new string[] { "$", "!" },
+                StringPrefixes = new string[] { "$", "!", "%" },
                 EnableDefaultHelp = false
             });
             CNext.RegisterCommands<Commands.UserCommands>();
             CNext.RegisterCommands<Commands.AdminCommands>();
-            CNext.RegisterCommands<Commands.UserConfig>();
+            CNext.RegisterCommands<Commands.OwnerCommands>();
+            CNext.RegisterCommands<Config.UserConfig>();
             INext = Client.UseInteractivity(new InteractivityConfiguration { });
         }
 
@@ -96,7 +97,7 @@ namespace HC_DBot.MainClasses
                 {
                     await BdayCon.OpenAsync();
                     List<ulong> BDayPPL = new List<ulong>();
-                    Console.WriteLine(BDayPPL.Count);
+                    //Console.WriteLine(BDayPPL.Count);
                     MySqlCommand bdaycmd = new MySqlCommand
                     {
                         Connection = BdayCon
@@ -151,7 +152,7 @@ namespace HC_DBot.MainClasses
         {
             foreach (var guild in e.Guilds)
             {
-                Console.WriteLine(guild.Value.Name);
+                Console.WriteLine($"{guild.Value.Name} loading");
                 await connection.OpenAsync();
                 try
                 {
@@ -683,8 +684,8 @@ namespace HC_DBot.MainClasses
             builder.WithTitle("Changelog");
             builder.WithThumbnailUrl("https://media.discordapp.net/attachments/496417444613586984/496671867109769216/logthumbnail.png");
             builder.WithDescription("Info");
-            builder.AddField(name: "Function", value: $"{functionName}");
-            builder.AddField(name: "Description", value: $"{description}");
+            builder.AddField(name: "Command", value: $"{functionName}", inline: true);
+            builder.AddField(name: "Description", value: $"{description}", inline: true);
             builder.AddField(name: "Message", value: $"{message}");
             builder.WithFooter("Copyright 2018 Lala Sabathil");
 
